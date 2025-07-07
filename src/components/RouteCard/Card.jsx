@@ -9,7 +9,7 @@ const Card = ({
   setIsExpanded,
 }) => {
   return (
-    <div className="bg-white m-4 rounded-lg shadow-lg">
+    <div className="bg-gray-70 m-4 rounded-lg shadow-lg">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Estimated Arrival</h3>
@@ -25,7 +25,7 @@ const Card = ({
           </button>
         </div>
 
-        <p className="text-gray-600 mb-4">{routeData.arrival}</p>
+        <p className="text-black mb-4">{routeData.arrival}</p>
 
         {/* Transport Mode Tabs */}
         <div className="flex space-x-1 mb-4">
@@ -35,8 +35,8 @@ const Card = ({
               onClick={() => setSelectedTransport(mode)}
               className={`px-4 py-2 rounded-lg text-sm font-medium ${
                 selectedTransport === mode
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-white text-black"
+                  : "bg-gray-100 text-zinc-400 hover:bg-gray-200"
               }`}
             >
               {mode}
@@ -52,11 +52,11 @@ const Card = ({
         </div>
 
         {/* Next Ferry */}
-        <div className="border-t pt-4">
+        <div className="border-t pt-4 bg-white rounded">
           <h4 className="font-semibold mb-2">Next ferry - Kusu</h4>
           <div className="flex space-x-4 text-sm">
             <span className="font-medium">{routeData.nextFerry.time}</span>
-            <span className="text-gray-600">
+            <span className="text-zinc-400">
               {routeData.nextFerry.additional[1]}
             </span>
           </div>
@@ -65,7 +65,7 @@ const Card = ({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
+        <div className="border-t border-gray-200 p-4 bg-gray-0">
           <div className="space-y-4">
             {/* Detailed Route Info */}
             <div>
