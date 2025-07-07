@@ -45,7 +45,6 @@ export const FERRY_SCHEDULES = {
 
 // Mock locations - in production, this would integrate with Google Places API
 export const LOCATIONS = [
-  "Marina South Pier",
   "Sentosa",
   "Lazarus Island",
   "Sisters Island",

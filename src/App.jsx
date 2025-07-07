@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import StartingPage from "./pages/StartingPage";
 import SearchPage from "./pages/SearchPage";
-import HomePage from "./pages/HomePage";
+import RoutePage from "./pages/RoutePage";
 import FerryTimingsPage from "./pages/FerryTimings";
 import BottomNavigation from "./components/Navbar";
 import { FERRY_SCHEDULES, LOCATIONS } from "./data/ferryData";
@@ -89,7 +89,7 @@ const FerryApp = () => {
         );
       case "home":
         return (
-          <HomePage
+          <RoutePage
             selectedLocation={selectedLocation}
             selectedTransport={selectedTransport}
             setSelectedTransport={setSelectedTransport}

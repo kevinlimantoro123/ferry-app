@@ -2,7 +2,7 @@ import React from "react";
 import { MapPin, Map } from "lucide-react";
 import RouteCard from "../components/RouteCard/Card";
 
-const HomePage = ({
+const RoutePage = ({
   selectedLocation,
   selectedTransport,
   setSelectedTransport,
@@ -14,9 +14,7 @@ const HomePage = ({
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Route to Ferry
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Route to MSP</h1>
         <div className="flex items-center space-x-2 text-gray-600">
           <MapPin className="h-4 w-4" />
           <span className="text-sm">{selectedLocation}</span>
@@ -50,4 +48,4 @@ const HomePage = ({
   );
 };
 
-export default HomePage;
+export default RoutePage;
