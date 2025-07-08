@@ -1,5 +1,6 @@
 import React from "react";
-import { Car, ChevronUp, ChevronDown } from "lucide-react";
+import { Car, Bus, Navigation, X, ChevronUp, ChevronDown } from "lucide-react";
+import TransportMode from "./TransportMode";
 
 const Card = ({
   routeData,
@@ -8,112 +9,84 @@ const Card = ({
   isExpanded,
   setIsExpanded,
 }) => {
+  const transportModes = [
+    { id: "car", icon: Car, label: "Car" },
+    { id: "public", icon: Bus, label: "Public" },
+    { id: "walk", icon: Navigation, label: "Walk" },
+  ];
+
   return (
-    <div className="bg-gray-70 m-4 rounded-lg shadow-lg">
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Estimated Arrival</h3>
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            {isExpanded ? (
-              <ChevronDown className="h-5 w-5" />
-            ) : (
-              <ChevronUp className="h-5 w-5" />
-            )}
-          </button>
-        </div>
+    <div
+      className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl transition-all duration-300 ${
+        isExpanded ? "h-96" : "h-auto"
+      }`}
+    >
+      {/* Handle bar */}
+      <div className="flex justify-center pt-3 pb-2">
+        <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+      </div>
 
-        <p className="text-black mb-4">{routeData.arrival}</p>
+      {/* Header with close button */}
+      <div className="flex items-center justify-between px-6 pb-4">
+        <h2 className="text-lg font-semibold text-gray-900">
+          Estimated Arrival
+        </h2>
+        <button
+          onClick={() => setIsExpanded(false)}
+          className="p-1 hover:bg-gray-100 rounded-full"
+        >
+          <X className="h-5 w-5 text-gray-400" />
+        </button>
+      </div>
 
-        {/* Transport Mode Tabs */}
-        <div className="flex space-x-1 mb-4">
-          {["Car", "Public", "Walk"].map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setSelectedTransport(mode)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                selectedTransport === mode
-                  ? "bg-white text-black"
-                  : "bg-gray-100 text-zinc-400 hover:bg-gray-200"
-              }`}
-            >
-              {mode}
-            </button>
+      {/* Time display */}
+      <div className="px-6 pb-4">
+        <p className="text-sm text-gray-600">{routeData.timeRange}</p>
+      </div>
+
+      {/* Transport mode tabs */}
+      <div className="px-6 pb-4">
+        <div className="flex space-x-2">
+          {transportModes.map((mode) => (
+            <TransportMode
+              key={mode.id}
+              icon={mode.icon}
+              label={mode.label}
+              isActive={selectedTransport === mode.id}
+              onClick={() => setSelectedTransport(mode.id)}
+            />
           ))}
-        </div>
-
-        {/* Route Info */}
-        <div className="flex items-center space-x-4 mb-4">
-          <Car className="h-5 w-5 text-blue-500" />
-          <span className="font-semibold">{routeData.duration}</span>
-          <span className="text-gray-600">({routeData.distance})</span>
-        </div>
-
-        {/* Next Ferry */}
-        <div className="border-t pt-4 bg-white rounded">
-          <h4 className="font-semibold mb-2">Next ferry - Kusu</h4>
-          <div className="flex space-x-4 text-sm">
-            <span className="font-medium">{routeData.nextFerry.time}</span>
-            <span className="text-zinc-400">
-              {routeData.nextFerry.additional[1]}
-            </span>
-          </div>
         </div>
       </div>
 
-      {/* Expanded Content */}
-      {isExpanded && (
-        <div className="border-t border-gray-200 p-4 bg-gray-0">
-          <div className="space-y-4">
-            {/* Detailed Route Info */}
-            <div>
-              <h5 className="font-semibold mb-2">Route Details</h5>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p>Total Distance: {routeData.expandedInfo.totalDistance}</p>
-                <p>Traffic: {routeData.expandedInfo.trafficCondition}</p>
-                <p>Route: {routeData.expandedInfo.route}</p>
-              </div>
-            </div>
-
-            {/* All Ferry Times */}
-            <div>
-              <h5 className="font-semibold mb-2">All Ferry Times</h5>
-              <div className="grid grid-cols-4 gap-2">
-                {routeData.nextFerry.additional.map((time, index) => (
-                  <div
-                    key={index}
-                    className="text-center p-2 bg-white rounded border"
-                  >
-                    <span className="text-sm font-medium">{time}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Alternative Routes */}
-            <div>
-              <h5 className="font-semibold mb-2">Alternative Routes</h5>
-              <div className="space-y-2">
-                {routeData.expandedInfo.alternatives.map((alt, index) => (
-                  <div key={index} className="p-3 bg-white rounded border">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">{alt.route}</span>
-                      <span className="text-sm text-gray-600">
-                        {alt.duration}
-                      </span>
-                    </div>
-                    <span className="text-xs text-gray-500">
-                      {alt.distance}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+      {/* Route details */}
+      <div className="px-6 pb-6">
+        <div className="flex items-center space-x-3 mb-4">
+          <Car className="h-6 w-6 text-gray-700" />
+          <div>
+            <p className="text-lg font-semibold text-gray-900">
+              {routeData.duration}
+            </p>
+            <p className="text-sm text-gray-500">({routeData.distance})</p>
           </div>
         </div>
-      )}
+
+        {/* Ferry information */}
+        {routeData.ferry && (
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h3 className="font-medium text-gray-900 mb-2">
+              Next ferry - {routeData.ferry.destination}
+            </h3>
+            <div className="flex space-x-4 text-sm">
+              <span className="font-medium text-gray-900">
+                {routeData.ferry.times[0]}
+              </span>
+              <span className="text-gray-500">{routeData.ferry.times[1]}</span>
+              <span className="text-gray-500">{routeData.ferry.times[2]}</span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

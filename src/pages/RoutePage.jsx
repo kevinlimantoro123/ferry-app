@@ -1,5 +1,6 @@
-import React from "react";
-import { MapPin, Map } from "lucide-react";
+import React, { useState } from "react";
+import SearchBar from "../components/SearchBar";
+import MapView from "../components/MapView";
 import RouteCard from "../components/RouteCard/Card";
 
 const RoutePage = ({
@@ -10,40 +11,45 @@ const RoutePage = ({
   isRouteCardExpanded,
   setIsRouteCardExpanded,
 }) => {
+  const [searchValue, setSearchValue] = useState(selectedLocation || "");
+
+  // Dummy route data
+  const defaultRouteData = {
+    timeRange: "15:00 - 15:16 PM",
+    duration: "16 minutes",
+    distance: "12 km",
+    ferry: {
+      destination: "Kusu",
+      times: ["15:30", "15:30", "16:00"],
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Route to MSP</h1>
-        <div className="flex items-center space-x-2 text-gray-600">
-          <MapPin className="h-4 w-4" />
-          <span className="text-sm">{selectedLocation}</span>
+    <div className="h-screen bg-gray-50 relative overflow-hidden">
+      {/* Search bar at the top */}
+      <div className="absolute top-0 left-0 right-0 z-20 bg-white shadow-sm">
+        <div className="p-4">
+          <SearchBar
+            value={searchValue}
+            onChange={setSearchValue}
+            placeholder="Search destinations..."
+          />
         </div>
       </div>
 
-      {/* Map View */}
-      <div className="h-80 bg-gradient-to-br from-blue-100 to-green-100 relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <Map className="h-16 w-16 text-blue-500 mx-auto mb-4" />
-            <p className="text-gray-600">Map will display route here</p>
-            <p className="text-sm text-gray-500 mt-2">
-              Google Maps integration
-            </p>
-          </div>
-        </div>
+      {/* Full screen map */}
+      <div className="absolute inset-0 pt-20">
+        <MapView />
       </div>
 
       {/* Route Details Card */}
-      {routeData && (
-        <RouteCard
-          routeData={routeData}
-          selectedTransport={selectedTransport}
-          setSelectedTransport={setSelectedTransport}
-          isExpanded={isRouteCardExpanded}
-          setIsExpanded={setIsRouteCardExpanded}
-        />
-      )}
+      <RouteCard
+        routeData={routeData}
+        selectedTransport={selectedTransport}
+        setSelectedTransport={setSelectedTransport}
+        isExpanded={isRouteCardExpanded}
+        setIsExpanded={setIsRouteCardExpanded}
+      />
     </div>
   );
 };
