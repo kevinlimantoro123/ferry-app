@@ -161,15 +161,19 @@ const Card = ({
 
         {/* Transport mode tabs */}
         <div className="px-6 pb-4">
-          <div className="flex w-full">
-            {transportModes.map((mode) => (
-              <TransportMode
-                key={mode.id}
-                icon={mode.icon}
-                label={mode.label}
-                isActive={selectedTransport === mode.id}
-                onClick={() => setSelectedTransport(mode.id)}
-              />
+          <div className="flex w-full items-center">
+            {transportModes.map((mode, index) => (
+              <React.Fragment key={mode.id}>
+                <TransportMode
+                  icon={mode.icon}
+                  label={mode.label}
+                  isActive={selectedTransport === mode.id}
+                  onClick={() => setSelectedTransport(mode.id)}
+                />
+                {index < transportModes.length - 1 && (
+                  <div className="w-px bg-gray-500 mx-2 h-3"></div>
+                )}
+              </React.Fragment>
             ))}
           </div>
         </div>
