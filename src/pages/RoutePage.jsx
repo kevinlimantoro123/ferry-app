@@ -5,7 +5,12 @@ import RouteCard from "../components/RouteCard/Card";
 import { MapPin } from "lucide-react";
 import { LOCATIONS } from "../data/ferryData";
 
-const RoutePage = ({ selectedLocation, onLocationSelect, onBack }) => {
+const RoutePage = ({
+  selectedLocation,
+  onLocationSelect,
+  onBack,
+  onNavigateToFerry,
+}) => {
   const [searchValue, setSearchValue] = useState(selectedLocation || "");
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [filteredLocations, setFilteredLocations] = useState([]);
@@ -107,8 +112,13 @@ const RoutePage = ({ selectedLocation, onLocationSelect, onBack }) => {
 
   return (
     <div className="h-screen bg-gray-50 relative overflow-hidden">
-      {/* Search bar at the top */}
-      <div className="absolute top-0 left-0 right-0 z-20 bg-white shadow-sm">
+      {/* Full screen map - no padding */}
+      <div className="absolute inset-0">
+        <MapView />
+      </div>
+
+      {/* Search bar overlaid on top of map */}
+      <div className="absolute top-10 left-0 right-0 z-20">
         <div className="p-4 relative">
           <SearchBar
             value={searchValue}
@@ -143,11 +153,6 @@ const RoutePage = ({ selectedLocation, onLocationSelect, onBack }) => {
         </div>
       </div>
 
-      {/* Full screen map */}
-      <div className="absolute inset-0 pt-20">
-        <MapView />
-      </div>
-
       {/* Route Details Card */}
       <div className="fixed bottom-16 left-0 right-0 z-30">
         {currentRouteData && (
@@ -158,6 +163,7 @@ const RoutePage = ({ selectedLocation, onLocationSelect, onBack }) => {
             isExpanded={isRouteCardExpanded}
             setIsExpanded={setIsRouteCardExpanded}
             onClose={onBack}
+            onNavigateToFerry={onNavigateToFerry}
           />
         )}
       </div>

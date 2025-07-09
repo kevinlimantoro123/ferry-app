@@ -9,6 +9,7 @@ const Card = ({
   isExpanded,
   setIsExpanded,
   onClose,
+  onNavigateToFerry,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragY, setDragY] = useState(0);
@@ -137,9 +138,9 @@ const Card = ({
             className="p-1 hover:bg-gray-100 rounded-full transition-colors"
           >
             {isExpanded ? (
-              <ChevronDown className="h-5 w-5 text-gray-400" />
+              <ChevronDown className="h-6 w-6 text-gray-400" />
             ) : (
-              <ChevronUp className="h-5 w-5 text-gray-400" />
+              <ChevronUp className="h-6 w-6 text-gray-400" />
             )}
           </button>
           <button
@@ -160,7 +161,7 @@ const Card = ({
 
         {/* Transport mode tabs */}
         <div className="px-6 pb-4">
-          <div className="flex space-x-4 w-full">
+          <div className="flex w-full">
             {transportModes.map((mode) => (
               <TransportMode
                 key={mode.id}
@@ -187,7 +188,10 @@ const Card = ({
 
           {/* Ferry information */}
           {routeData.ferry && (
-            <div className="bg-white p-4 rounded-lg">
+            <div
+              className="bg-white p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => onNavigateToFerry && onNavigateToFerry()}
+            >
               <h3 className="font-medium text-gray-900 mb-2">
                 Next ferry - {routeData.ferry.destination}
               </h3>
@@ -210,7 +214,11 @@ const Card = ({
         {isExpanded && routeData.ferries && (
           <div className="px-6 pb-6 space-y-4">
             {routeData.ferries.map((ferry, index) => (
-              <div key={index} className="bg-white p-4 rounded-lg">
+              <div
+                key={index}
+                className="bg-white p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => onNavigateToFerry && onNavigateToFerry()}
+              >
                 <h3 className="font-medium text-gray-900 mb-2">
                   Next ferry - {ferry.destination}
                 </h3>
