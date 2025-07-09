@@ -46,10 +46,10 @@ export const FERRY_SCHEDULES = {
 // Mock locations - in production, this would integrate with Google Places API
 export const LOCATIONS = [
   "Sentosa",
-  "Lazarus Island",
-  "Sisters Island",
-  "Kusu Island",
-  "St. John Island",
+  "Newton",
+  "Kent Ridge",
+  "One North",
+  "Labrador Park",
   "Clarke Quay",
   "Marina Bay",
   "Orchard Road",

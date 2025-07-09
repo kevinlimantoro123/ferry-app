@@ -1,14 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import SearchBar from "../components/SearchBar";
 import { MapPin, Search, X } from "lucide-react";
+import { LOCATIONS } from "../data/ferryData";
 
-const SearchPage = ({
-  searchQuery,
-  setSearchQuery,
-  filteredLocations,
-  onLocationSelect,
-  onBack,
-}) => {
+const SearchPage = ({ onLocationSelect, onBack }) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredLocations, setFilteredLocations] = useState(LOCATIONS);
+
+  // Filter locations based on search query
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = LOCATIONS.filter((location) =>
+        location.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredLocations(filtered);
+    } else {
+      setFilteredLocations(LOCATIONS);
+    }
+  }, [searchQuery]);
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
