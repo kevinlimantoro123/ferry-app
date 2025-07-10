@@ -39,6 +39,7 @@ const FerryApp = () => {
             selectedLocation={selectedLocation}
             onLocationSelect={handleLocationSelect}
             onBack={() => setCurrentPage("search")}
+            onNavigateToFerry={() => setCurrentPage("ferry")}
           />
         );
       case "ferry":
