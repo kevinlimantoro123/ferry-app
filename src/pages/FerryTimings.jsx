@@ -22,8 +22,8 @@ const FerryTimingsPage = ({
               onClick={() => setSelectedFerryTab(tab)}
               className={`px-4 py-2 rounded-lg text-sm font-medium ${
                 selectedFerryTab === tab
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-white text-black font-semibold shadow-sm"
+                  : "bg-zinc-200 text-gray-500 hover:bg-gray-50"
               }`}
             >
               {tab}
