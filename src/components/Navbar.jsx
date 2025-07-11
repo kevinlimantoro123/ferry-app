@@ -13,7 +13,7 @@ const BottomNavigation = ({ currentPage, setCurrentPage }) => {
           }
           className={`flex flex-col items-center space-y-1 ${
             currentPage === "starting" || currentPage === "route"
-              ? "text-blue-500"
+              ? "text-black font-semibold"
               : "text-gray-400"
           } ${
             currentPage === "starting" || currentPage === "route"
@@ -27,7 +27,9 @@ const BottomNavigation = ({ currentPage, setCurrentPage }) => {
         <button
           onClick={() => setCurrentPage("ferry")}
           className={`flex flex-col items-center space-y-1 ${
-            currentPage === "ferry" ? "text-blue-500" : "text-gray-500"
+            currentPage === "ferry"
+              ? "text-black font-semibold"
+              : "text-gray-400"
           }`}
         >
           <List className="h-6 w-6" />

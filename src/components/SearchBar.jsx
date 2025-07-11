@@ -10,7 +10,7 @@ const SearchBar = ({ value, onChange, placeholder = "Search...", onClick }) => {
         onChange={(e) => onChange(e.target.value)}
         onClick={onClick}
         placeholder={placeholder}
-        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm cursor-pointer font-semibold"
+        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm cursor-pointer font-medium"
       />
     </div>
   );
