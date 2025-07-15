@@ -96,10 +96,9 @@ export const useDropdownHandler = (onLocationSelect) => {
   };
 
   const handleSearchBlur = () => {
-    // Delay hiding dropdown to allow clicks on dropdown items
     setTimeout(() => {
       setShowSearchDropdown(false);
-    }, 200);
+    }, 150);
   };
 
   const handleSearchChange = (value) => {
@@ -125,7 +124,7 @@ export const useDropdownHandler = (onLocationSelect) => {
       selectedLocationName = location.name;
     }
 
-    // Close the dropdown
+    // Immediately close the dropdown for responsive feeling
     setShowSearchDropdown(false);
     setSearchQuery(selectedLocationName);
 
@@ -138,14 +137,28 @@ export const useDropdownHandler = (onLocationSelect) => {
   const handleUseCurrentLocation = async () => {
     const location = await getCurrentLocation();
     if (location) {
-      const locationName = location.isDefault
-        ? "Singapore (Default Location)"
-        : "Current Location";
+      // Instead of passing a string, pass the actual coordinates
+      // by calling onLocationSelect with a special object
       if (onLocationSelect) {
-        onLocationSelect(locationName);
+        const locationName = location.isDefault
+          ? "Singapore (Default Location)"
+          : "Current Location";
+
+        // Pass coordinates directly to avoid geocoding issues
+        onLocationSelect({
+          type: "coordinates",
+          name: locationName,
+          lat: location.lat,
+          lng: location.lng,
+          isDefault: location.isDefault,
+        });
       }
       setShowSearchDropdown(false);
     }
+  };
+
+  const closeDropdown = () => {
+    setShowSearchDropdown(false);
   };
 
   return {
@@ -163,5 +176,6 @@ export const useDropdownHandler = (onLocationSelect) => {
     handleSearchChange,
     handleLocationSelect,
     handleUseCurrentLocation,
+    closeDropdown,
   };
 };

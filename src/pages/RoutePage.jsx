@@ -26,43 +26,58 @@ const RoutePage = ({
   useEffect(() => {
     console.log("RoutePage received selectedLocation:", selectedLocation);
     if (selectedLocation) {
-      setDisplayLocation(selectedLocation);
+      // Check if selectedLocation is coordinates object (from current location)
+      if (
+        typeof selectedLocation === "object" &&
+        selectedLocation.type === "coordinates"
+      ) {
+        setDisplayLocation(selectedLocation.name);
+        setSelectedLocationData({
+          name: selectedLocation.name,
+          lat: selectedLocation.lat,
+          lng: selectedLocation.lng,
+        });
+        console.log("Using coordinates directly:", selectedLocation);
+      } else {
+        // Handle string address (needs geocoding)
+        setDisplayLocation(selectedLocation);
 
-      // Geocode the location to get actual coordinates
-      const geocodeLocation = async () => {
-        try {
-          const geocodedResult = await googleMapsService.geocodeAddress(
-            selectedLocation
-          );
-          if (geocodedResult && geocodedResult.location) {
-            const lat = geocodedResult.location.lat();
-            const lng = geocodedResult.location.lng();
-            setSelectedLocationData({
-              name: selectedLocation,
-              lat: lat,
-              lng: lng,
-            });
-            console.log("Geocoded location:", { lat, lng });
-          } else {
-            // Fallback to default Singapore coordinates if geocoding fails
+        // Geocode the location to get actual coordinates
+        const geocodeLocation = async () => {
+          try {
+            const geocodedResult = await googleMapsService.geocodeAddress(
+              selectedLocation
+            );
+            if (geocodedResult && geocodedResult.location) {
+              const lat = geocodedResult.location.lat();
+              const lng = geocodedResult.location.lng();
+              setSelectedLocationData({
+                name: selectedLocation,
+                lat: lat,
+                lng: lng,
+              });
+              console.log("Geocoded location:", { lat, lng });
+            } else {
+              // Fallback to default Singapore coordinates if geocoding fails
+              setSelectedLocationData({
+                name: selectedLocation,
+                lat: 1.3521,
+                lng: 103.8198,
+              });
+            }
+          } catch (error) {
+            console.error("Error geocoding location:", error);
+            // Fallback to default coordinates
             setSelectedLocationData({
               name: selectedLocation,
               lat: 1.3521,
               lng: 103.8198,
             });
           }
-        } catch (error) {
-          console.error("Error geocoding location:", error);
-          // Fallback to default coordinates
-          setSelectedLocationData({
-            name: selectedLocation,
-            lat: 1.3521,
-            lng: 103.8198,
-          });
-        }
-      };
+        };
 
-      geocodeLocation();
+        geocodeLocation();
+      }
     }
   }, [selectedLocation]);
 
