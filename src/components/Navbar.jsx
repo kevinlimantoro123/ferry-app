@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigation, List } from "lucide-react";
 
 const BottomNavigation = ({ currentPage, setCurrentPage }) => {

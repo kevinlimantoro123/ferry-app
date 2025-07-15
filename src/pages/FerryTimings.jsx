@@ -1,4 +1,3 @@
-import React from "react";
 import FerryScheduleTable from "../components/FerryScheduleTable";
 
 const FerryTimingsPage = ({

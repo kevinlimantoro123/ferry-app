@@ -14,7 +14,6 @@ const RouteCard = ({
   isExpanded,
   setIsExpanded,
   onClose,
-  onNavigateToFerry,
   loading = false,
   error = null,
 }) => {
@@ -71,7 +70,7 @@ const RouteCard = ({
 
   return (
     <div
-      className="bg-white shadow-lg transition-all duration-300 ease-in-out rounded-t-lg"
+      className="bg-gray-100 shadow-lg transition-all duration-300 ease-in-out rounded-t-lg"
       style={dragStyles}
     >
       <CardHeader
@@ -82,8 +81,14 @@ const RouteCard = ({
         dragHandlers={dragHandlers}
       />
 
-      {/* Main content */}
-      <div className="p-4">
+      {/* Content */}
+      <div className="px-5 pb-2">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+          Estimated Arrival
+        </h2>
+        <p className="text-lg text-gray-700">{routeData.timeRange}</p>
+      </div>
+      <div className="px-4 pt-2 pb-4">
         <TransportModeSelector
           selectedTransport={selectedTransport}
           setSelectedTransport={setSelectedTransport}

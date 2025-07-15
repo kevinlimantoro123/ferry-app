@@ -1,5 +1,3 @@
-import React from "react";
-
 const FerryScheduleTable = ({ ferryTimings }) => {
   const getStatusColor = (status) => {
     if (!status) return "bg-gray-100 text-gray-800";

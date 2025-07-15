@@ -1,4 +1,3 @@
-// hooks/useRoute.js
 import { useState, useCallback } from "react";
 import googleMapsService from "../services/googleMaps";
 

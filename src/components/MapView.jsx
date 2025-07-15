@@ -1,5 +1,5 @@
 // components/MapView.js
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import googleMapsService from "../services/googleMaps";
 
 const MapView = ({

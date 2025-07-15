@@ -1,4 +1,3 @@
-import React from "react";
 import { Car, Train, Footprints } from "lucide-react";
 
 const TransportModeSelector = ({ selectedTransport, setSelectedTransport }) => {
@@ -22,14 +21,16 @@ const TransportModeSelector = ({ selectedTransport, setSelectedTransport }) => {
           <button
             key={mode}
             onClick={() => setSelectedTransport(mode)}
-            className={`flex-1 p-3 rounded-lg border transition-colors ${
+            className={`flex-1 p-3 rounded-lg transition-colors ${
               selectedTransport === mode
-                ? "bg-blue-50 border-blue-500 text-blue-600"
-                : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
+                ? "bg-white text-black shadow-sm"
+                : "bg-zinc-200 text-gray-500 hover:bg-gray-100"
             }`}
           >
-            <Icon className="h-5 w-5 mx-auto mb-1" />
-            <span className="text-xs font-medium">{transportLabels[mode]}</span>
+            <Icon className="h-7 w-7 mx-auto mb-1" />
+            <span className="text-md font-semibold">
+              {transportLabels[mode]}
+            </span>
           </button>
         );
       })}
