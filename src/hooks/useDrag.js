@@ -37,7 +37,6 @@ export const useDrag = (cardState, setCardState) => {
     } else if (dragOffset < -100 && cardState === "expanded") {
       setCardState("collapsed");
     }
-
     setIsDragging(false);
     setDragOffset(0);
   };
@@ -73,7 +72,6 @@ export const useDrag = (cardState, setCardState) => {
     } else if (dragOffset < -100 && cardState === "expanded") {
       setCardState("collapsed");
     }
-
     setIsDragging(false);
     setDragOffset(0);
   };

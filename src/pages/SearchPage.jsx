@@ -2,7 +2,7 @@ import React from "react";
 import SearchBar from "../components/SearchBar";
 import SearchDropdown from "../components/SearchDropdown";
 import { MapPin, X } from "lucide-react";
-import { useLocationHandler } from "../hooks/useLocationHandler";
+import { useDropdownHandler } from "../hooks/useDropdownHandler";
 
 const SearchPage = ({ onLocationSelect, onBack }) => {
   const {
@@ -17,11 +17,7 @@ const SearchPage = ({ onLocationSelect, onBack }) => {
     handleSearchChange,
     handleLocationSelect,
     handleUseCurrentLocation,
-  } = useLocationHandler(null, onLocationSelect, {
-    enableGeocoding: false,
-    enableFiltering: true,
-    keepDropdownOpenOnEmpty: false,
-  });
+  } = useDropdownHandler(onLocationSelect);
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -45,7 +41,7 @@ const SearchPage = ({ onLocationSelect, onBack }) => {
             {/* Search dropdown */}
             <SearchDropdown
               showSearchDropdown={showSearchDropdown}
-              searchQuery={searchQuery}
+              searchValue={searchQuery}
               searchResults={searchResults}
               searchLoading={searchLoading}
               onLocationSelect={handleLocationSelect}

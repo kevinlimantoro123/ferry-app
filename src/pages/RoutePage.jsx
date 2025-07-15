@@ -6,8 +6,9 @@ import MapView from "../components/MapView";
 import RouteCard from "../components/RouteCard/Card";
 import { Loader } from "lucide-react";
 import { useRoute } from "../hooks/useRoute";
-import { useLocationHandler } from "../hooks/useLocationHandler";
+import { useDropdownHandler } from "../hooks/useDropdownHandler";
 import { formatRouteData } from "../utils/ferryUtils";
+import googleMapsService from "../services/googleMaps";
 
 const RoutePage = ({
   selectedLocation,
@@ -17,26 +18,67 @@ const RoutePage = ({
 }) => {
   const [selectedTransport, setSelectedTransport] = useState("driving");
   const [cardState, setCardState] = useState("minimal");
+  const [selectedLocationData, setSelectedLocationData] = useState(null);
+  const [displayLocation, setDisplayLocation] = useState("");
   const centerUserLocationRef = useRef(null);
+
+  // Convert selectedLocation to location data and update display
+  useEffect(() => {
+    console.log("RoutePage received selectedLocation:", selectedLocation);
+    if (selectedLocation) {
+      setDisplayLocation(selectedLocation);
+
+      // Geocode the location to get actual coordinates
+      const geocodeLocation = async () => {
+        try {
+          const geocodedResult = await googleMapsService.geocodeAddress(
+            selectedLocation
+          );
+          if (geocodedResult && geocodedResult.location) {
+            const lat = geocodedResult.location.lat();
+            const lng = geocodedResult.location.lng();
+            setSelectedLocationData({
+              name: selectedLocation,
+              lat: lat,
+              lng: lng,
+            });
+            console.log("Geocoded location:", { lat, lng });
+          } else {
+            // Fallback to default Singapore coordinates if geocoding fails
+            setSelectedLocationData({
+              name: selectedLocation,
+              lat: 1.3521,
+              lng: 103.8198,
+            });
+          }
+        } catch (error) {
+          console.error("Error geocoding location:", error);
+          // Fallback to default coordinates
+          setSelectedLocationData({
+            name: selectedLocation,
+            lat: 1.3521,
+            lng: 103.8198,
+          });
+        }
+      };
+
+      geocodeLocation();
+    }
+  }, [selectedLocation]);
 
   // Custom hooks
   const {
-    searchValue,
+    searchQuery: searchValue,
     showSearchDropdown,
-    selectedLocationData,
-    currentLocation,
     searchResults,
     searchLoading,
+    currentLocation,
     handleSearchFocus,
     handleSearchBlur,
     handleSearchChange,
     handleLocationSelect,
     handleUseCurrentLocation,
-  } = useLocationHandler(selectedLocation, onLocationSelect, {
-    enableGeocoding: true,
-    enableFiltering: false,
-    keepDropdownOpenOnEmpty: true,
-  });
+  } = useDropdownHandler(onLocationSelect);
 
   const {
     routeData,
@@ -78,8 +120,11 @@ const RoutePage = ({
       <div className="absolute top-10 left-0 right-0 z-20">
         <div className="p-4 relative">
           <SearchBar
-            value={searchValue}
-            onChange={handleSearchChange}
+            value={displayLocation}
+            onChange={(value) => {
+              setDisplayLocation(value);
+              handleSearchChange(value);
+            }}
             onFocus={handleSearchFocus}
             onBlur={handleSearchBlur}
             placeholder="Search destinations..."
@@ -88,10 +133,15 @@ const RoutePage = ({
           {/* Search dropdown */}
           <SearchDropdown
             showSearchDropdown={showSearchDropdown}
-            searchValue={searchValue}
+            searchValue={displayLocation}
             searchResults={searchResults}
             searchLoading={searchLoading}
-            onLocationSelect={handleLocationSelect}
+            onLocationSelect={(location) => {
+              const locationName =
+                typeof location === "string" ? location : location.name;
+              setDisplayLocation(locationName);
+              handleLocationSelect(location);
+            }}
             onUseCurrentLocation={handleUseCurrentLocation}
           />
         </div>

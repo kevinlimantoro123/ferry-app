@@ -8,6 +8,8 @@ export const useRoute = (origin) => {
 
   const calculateRoute = useCallback(
     async (travelMode = "DRIVING") => {
+      console.log("🚗 Route calculation - Origin received:", origin);
+
       if (!origin) {
         setError("Origin location is required");
         return;
@@ -17,8 +19,7 @@ export const useRoute = (origin) => {
       setError(null);
 
       try {
-        // Use coordinates for more reliable routing
-        const destination = { lat: 1.2644, lng: 103.8203 }; // Marina South Pier coordinates
+        const destination = { lat: 1.2711, lng: 103.8633 }; // Marina South Pier coordinates
 
         let result;
         try {
@@ -27,6 +28,13 @@ export const useRoute = (origin) => {
             destination,
             travelMode
           );
+
+          console.log("📊 Route result:", {
+            distance: result.distance,
+            duration: result.duration,
+            from: origin,
+            to: destination,
+          });
         } catch (routeError) {
           // If the specific travel mode fails, try DRIVING as fallback
           if (travelMode !== "DRIVING") {
@@ -36,7 +44,6 @@ export const useRoute = (origin) => {
               destination,
               "DRIVING"
             );
-            // Update the travelMode to reflect what actually worked
             travelMode = "DRIVING";
           } else {
             throw routeError;
@@ -59,7 +66,6 @@ export const useRoute = (origin) => {
       } catch (err) {
         console.error("Error calculating route:", err);
 
-        // Provide user-friendly error messages
         let userMessage = "Unable to calculate route. ";
         if (err.message.includes("ZERO_RESULTS")) {
           userMessage +=

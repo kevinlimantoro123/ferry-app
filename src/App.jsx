@@ -18,6 +18,7 @@ const FerryApp = () => {
   }, [selectedFerryTab]);
 
   const handleLocationSelect = (location) => {
+    console.log("App handleLocationSelect called with:", location);
     setSelectedLocation(location);
     setCurrentPage("route");
   };

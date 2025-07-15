@@ -36,6 +36,13 @@ const MapView = ({
     }
   }, [userLocation]);
 
+  // Also try to add user location marker after map is initialized
+  useEffect(() => {
+    if (!isLoading && userLocation) {
+      addUserLocationMarker();
+    }
+  }, [isLoading, userLocation]);
+
   const initializeMap = async () => {
     try {
       setIsLoading(true);
@@ -95,30 +102,20 @@ const MapView = ({
       googleMapsService.displayRoute(result.route);
 
       // Add custom markers for origin
-      const originMarker = googleMapsService.addMarker(
-        typeof origin === "string"
-          ? (await googleMapsService.geocodeAddress(origin)).location
-          : origin,
-        {
-          title: "Starting Location",
-          icon: {
-            url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-          },
-        }
-      );
+      const originMarker = googleMapsService.addMarker(origin, {
+        title: "Starting Location",
+        icon: {
+          url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+        },
+      });
 
       // Add destination marker specifically for Marina South Pier
-      const destinationMarker = googleMapsService.addMarker(
-        typeof destination === "string"
-          ? (await googleMapsService.geocodeAddress(destination)).location
-          : destination,
-        {
-          title: "Marina South Pier - Ferry Terminal",
-          icon: {
-            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-          },
-        }
-      );
+      const destinationMarker = googleMapsService.addMarker(destination, {
+        title: "Marina South Pier - Ferry Terminal",
+        icon: {
+          url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+        },
+      });
 
       setMarkers((prev) => [...prev, originMarker, destinationMarker]);
 
@@ -145,29 +142,55 @@ const MapView = ({
   };
 
   const addUserLocationMarker = async () => {
-    if (!userLocation) return;
+    console.log(
+      "addUserLocationMarker called with userLocation:",
+      userLocation
+    );
+
+    if (!userLocation) {
+      console.log("No userLocation provided");
+      return;
+    }
+
+    if (!googleMapsService.map) {
+      console.log("Google Maps not initialized yet, retrying in 1 second...");
+      setTimeout(() => {
+        addUserLocationMarker();
+      }, 1000);
+      return;
+    }
 
     try {
       // Clear existing user location marker first
       if (userLocationMarker) {
         userLocationMarker.setMap(null);
+        console.log("Cleared existing user location marker");
       }
 
+      console.log("Creating user location marker at:", userLocation);
       const userMarker = googleMapsService.addMarker(userLocation, {
-        title: "Your Location",
+        title: userLocation.isDefault
+          ? "Default Location (Singapore)"
+          : "Your Location",
         icon: {
           path: 0, // google.maps.SymbolPath.CIRCLE = 0
           fillColor: "#FFFFFF",
           fillOpacity: 1,
-          strokeColor: "#4285F4",
+          strokeColor: userLocation.isDefault ? "#FF6B6B" : "#4285F4", // Red for default, blue for actual location
           strokeWeight: 3,
           scale: 8,
         },
       });
 
       setUserLocationMarker(userMarker);
+      console.log("User location marker created successfully");
     } catch (err) {
       console.error("Error adding user location marker:", err);
+      // Retry once after a short delay
+      setTimeout(() => {
+        console.log("Retrying user location marker creation...");
+        addUserLocationMarker();
+      }, 2000);
     }
   };
 
@@ -176,7 +199,7 @@ const MapView = ({
     if (userLocation) {
       console.log("Centering map on:", userLocation);
       googleMapsService.panTo(userLocation);
-      googleMapsService.setZoom(15);
+      googleMapsService.setZoom(14);
     } else {
       console.log("No user location available");
     }

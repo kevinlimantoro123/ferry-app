@@ -63,24 +63,68 @@ class GoogleMapsService {
   async getCurrentLocation() {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error("Geolocation not supported"));
+        console.warn(
+          "Geolocation not supported, using default Singapore location"
+        );
+        // Fallback to Singapore center if geolocation is not supported
+        resolve({
+          lat: 1.3521,
+          lng: 103.8198,
+          isDefault: true,
+        });
         return;
       }
 
+      // First try with high accuracy
       navigator.geolocation.getCurrentPosition(
         (position) => {
           resolve({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            isDefault: false,
           });
         },
         (error) => {
-          reject(error);
+          console.warn(
+            "High accuracy geolocation failed, trying with lower accuracy:",
+            error.message
+          );
+
+          // Fallback: try with lower accuracy settings
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              resolve({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+                isDefault: false,
+              });
+            },
+            (fallbackError) => {
+              console.warn(
+                "All geolocation attempts failed, using default Singapore location:",
+                fallbackError.message
+              );
+              // Final fallback to Singapore center
+              resolve({
+                lat: 1.3521,
+                lng: 103.8198,
+                isDefault: true,
+                error: fallbackError.message,
+              });
+            },
+            {
+              enableHighAccuracy: false,
+              timeout: 15000,
+              maximumAge: 600000, // 10 minutes
+            }
+          );
         },
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 300000,
+          maximumAge: 300000, // 5 minutes
         }
       );
     });
@@ -206,9 +250,16 @@ class GoogleMapsService {
 
   addMarker(position, options = {}) {
     if (!this.google || !this.map) {
+      console.error("Google Maps not initialized when trying to add marker");
       throw new Error("Google Maps not initialized");
     }
 
+    console.log(
+      "Adding marker at position:",
+      position,
+      "with options:",
+      options
+    );
     const marker = new this.google.maps.Marker({
       position: position,
       map: this.map,
