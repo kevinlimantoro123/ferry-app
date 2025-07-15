@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 
-export const useDrag = (isExpanded, setIsExpanded) => {
+export const useDrag = (cardState, setCardState) => {
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
@@ -23,11 +23,19 @@ export const useDrag = (isExpanded, setIsExpanded) => {
   const handleMouseUp = () => {
     if (!isDragging) return;
 
-    // Only change state when user lets go
-    if (dragOffset > 50 && !isExpanded) {
-      setIsExpanded(true);
-    } else if (dragOffset < -50 && isExpanded) {
-      setIsExpanded(false);
+    // Three states: 'collapsed', 'minimal', 'expanded'
+    if (dragOffset > 100 && cardState === "collapsed") {
+      setCardState("expanded");
+    } else if (dragOffset > 50 && cardState === "collapsed") {
+      setCardState("minimal");
+    } else if (dragOffset > 50 && cardState === "minimal") {
+      setCardState("expanded");
+    } else if (dragOffset < -50 && cardState === "expanded") {
+      setCardState("minimal");
+    } else if (dragOffset < -50 && cardState === "minimal") {
+      setCardState("collapsed");
+    } else if (dragOffset < -100 && cardState === "expanded") {
+      setCardState("collapsed");
     }
 
     setIsDragging(false);
@@ -51,11 +59,19 @@ export const useDrag = (isExpanded, setIsExpanded) => {
   const handleTouchEnd = () => {
     if (!isDragging) return;
 
-    // Only change state when user lets go
-    if (dragOffset > 50 && !isExpanded) {
-      setIsExpanded(true);
-    } else if (dragOffset < -50 && isExpanded) {
-      setIsExpanded(false);
+    // Three states: 'collapsed', 'minimal', 'expanded'
+    if (dragOffset > 100 && cardState === "collapsed") {
+      setCardState("expanded");
+    } else if (dragOffset > 50 && cardState === "collapsed") {
+      setCardState("minimal");
+    } else if (dragOffset > 50 && cardState === "minimal") {
+      setCardState("expanded");
+    } else if (dragOffset < -50 && cardState === "expanded") {
+      setCardState("minimal");
+    } else if (dragOffset < -50 && cardState === "minimal") {
+      setCardState("collapsed");
+    } else if (dragOffset < -100 && cardState === "expanded") {
+      setCardState("collapsed");
     }
 
     setIsDragging(false);

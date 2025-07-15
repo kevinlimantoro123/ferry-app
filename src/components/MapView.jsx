@@ -9,11 +9,14 @@ const MapView = ({
   showRoute = false,
   onRouteCalculated = null,
   className = "w-full h-full",
+  userLocation = null,
+  onCenterUserLocation = null,
 }) => {
   const mapRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [markers, setMarkers] = useState([]);
+  const [userLocationMarker, setUserLocationMarker] = useState(null);
 
   useEffect(() => {
     initializeMap();
@@ -27,6 +30,12 @@ const MapView = ({
     }
   }, [origin, destination, travelMode, showRoute]);
 
+  useEffect(() => {
+    if (userLocation) {
+      addUserLocationMarker();
+    }
+  }, [userLocation]);
+
   const initializeMap = async () => {
     try {
       setIsLoading(true);
@@ -34,7 +43,17 @@ const MapView = ({
 
       await googleMapsService.createMap(mapRef.current, {
         zoom: 11,
+        minZoom: 1, // Prevent zooming out beyond world view
         center: { lat: 1.3521, lng: 103.8198 }, // Singapore center
+        restriction: {
+          latLngBounds: {
+            north: 85,
+            south: -85,
+            west: -180,
+            east: 180,
+          },
+          strictBounds: true,
+        },
         styles: [
           {
             featureType: "water",
@@ -124,6 +143,56 @@ const MapView = ({
     });
     setMarkers([]);
   };
+
+  const addUserLocationMarker = async () => {
+    if (!userLocation) return;
+
+    try {
+      // Clear existing user location marker first
+      if (userLocationMarker) {
+        userLocationMarker.setMap(null);
+      }
+
+      console.log("Adding user location marker at:", userLocation);
+
+      const userMarker = googleMapsService.addMarker(userLocation, {
+        title: "Your Location",
+        icon: {
+          path: "M 0,0 C -2,-20 -10,-22 -10,-30 A 10,10 0 1,1 10,-30 C 10,-22 2,-20 0,0 z",
+          fillColor: "#4285F4",
+          fillOpacity: 1,
+          strokeColor: "#FFFFFF",
+          strokeWeight: 2,
+          scale: 1,
+          anchor: { x: 0, y: 30 },
+        },
+      });
+
+      setUserLocationMarker(userMarker);
+    } catch (err) {
+      console.error("Error adding user location marker:", err);
+    }
+  };
+
+  const centerOnUserLocation = () => {
+    if (userLocation) {
+      googleMapsService.panTo(userLocation);
+      googleMapsService.setZoom(15);
+    }
+  };
+
+  // Expose the center function to parent component
+  useEffect(() => {
+    if (onCenterUserLocation) {
+      onCenterUserLocation(centerOnUserLocation);
+    }
+  }, [userLocation, onCenterUserLocation]);
+
+  // Add debug logging
+  useEffect(() => {
+    console.log("MapView userLocation changed:", userLocation);
+    console.log("MapView onCenterUserLocation:", onCenterUserLocation);
+  }, [userLocation, onCenterUserLocation]);
 
   if (error) {
     return (

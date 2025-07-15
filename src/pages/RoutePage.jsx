@@ -1,5 +1,5 @@
 // pages/RoutePage.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import SearchBar from "../components/SearchBar";
 import MapView from "../components/MapView";
 import RouteCard from "../components/RouteCard/Card";
@@ -16,8 +16,9 @@ const RoutePage = ({
   const [searchValue, setSearchValue] = useState(selectedLocation || "");
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [selectedTransport, setSelectedTransport] = useState("driving");
-  const [isRouteCardExpanded, setIsRouteCardExpanded] = useState(false);
+  const [cardState, setCardState] = useState("minimal");
   const [selectedLocationData, setSelectedLocationData] = useState(null);
+  const centerUserLocationRef = useRef(null);
 
   // Custom hooks
   const {
@@ -36,6 +37,13 @@ const RoutePage = ({
     error: routeError,
     calculateRoute,
   } = useRoute(selectedLocationData);
+
+  // Debug logging
+  console.log("RoutePage state:", {
+    currentLocation,
+    cardState,
+    centerUserLocationFn: !!centerUserLocationRef.current,
+  });
 
   // Update search value when selectedLocation changes
   useEffect(() => {
@@ -234,6 +242,10 @@ const RoutePage = ({
           destination={{ lat: 1.2711, lng: 103.8633 }} // Marina South Pier coordinates
           travelMode={selectedTransport.toUpperCase()}
           showRoute={!!selectedLocationData}
+          userLocation={currentLocation}
+          onCenterUserLocation={(fn) => {
+            centerUserLocationRef.current = fn;
+          }}
           onRouteCalculated={(route) => {
             // Handle route calculation if needed
           }}
@@ -332,9 +344,10 @@ const RoutePage = ({
             routeData={currentRouteData}
             selectedTransport={selectedTransport}
             setSelectedTransport={setSelectedTransport}
-            isExpanded={isRouteCardExpanded}
-            setIsExpanded={setIsRouteCardExpanded}
+            cardState={cardState}
+            setCardState={setCardState}
             onClose={onBack}
+            onCenterUserLocation={centerUserLocationRef.current}
             onNavigateToFerry={onNavigateToFerry}
             loading={routeLoading}
             error={routeError}

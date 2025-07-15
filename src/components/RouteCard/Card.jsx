@@ -1,5 +1,5 @@
 import React from "react";
-import { MapPin, AlertCircle } from "lucide-react";
+import { MapPin, AlertCircle, Navigation } from "lucide-react";
 import { useDrag } from "../../hooks/useDrag";
 import CardHeader from "./CardHeader";
 import TransportModeSelector from "./TransportModeSelector";
@@ -11,16 +11,26 @@ const RouteCard = ({
   routeData,
   selectedTransport,
   setSelectedTransport,
-  isExpanded,
-  setIsExpanded,
+  cardState = "minimal",
+  setCardState,
   onClose,
+  onCenterUserLocation,
   loading = false,
   error = null,
 }) => {
   const { dragRef, dragHandlers, dragStyles } = useDrag(
-    isExpanded,
-    setIsExpanded
+    cardState,
+    setCardState
   );
+
+  // Debug logging
+  console.log("Card props:", {
+    cardState,
+    onCenterUserLocation: !!onCenterUserLocation,
+    showButton:
+      (cardState === "minimal" || cardState === "collapsed") &&
+      onCenterUserLocation,
+  });
 
   if (error) {
     return (
@@ -69,37 +79,55 @@ const RouteCard = ({
   }
 
   return (
-    <div
-      className="bg-gray-100 shadow-lg transition-all duration-300 ease-in-out rounded-t-lg"
-      style={dragStyles}
-    >
-      <CardHeader
-        isExpanded={isExpanded}
-        setIsExpanded={setIsExpanded}
-        onClose={onClose}
-        dragRef={dragRef}
-        dragHandlers={dragHandlers}
-      />
+    <div className="relative">
+      {/* Navigation button - show only for minimal and collapsed states */}
+      {(cardState === "minimal" || cardState === "collapsed") &&
+        onCenterUserLocation && (
+          <button
+            onClick={onCenterUserLocation}
+            className="absolute -top-16 right-4 z-10 p-3 bg-white hover:bg-gray-50 rounded-full shadow-lg transition-colors"
+            aria-label="Center on your location"
+          >
+            <Navigation className="h-6 w-6 text-blue-600" />
+          </button>
+        )}
 
-      {/* Content */}
-      <div className="px-5 pb-2">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          Estimated Arrival
-        </h2>
-        <p className="text-lg text-gray-700">{routeData.timeRange}</p>
-      </div>
-      <div className="px-4 pt-2 pb-4">
-        <TransportModeSelector
-          selectedTransport={selectedTransport}
-          setSelectedTransport={setSelectedTransport}
+      <div
+        className="bg-gray-100 shadow-lg transition-all duration-300 ease-in-out rounded-t-lg"
+        style={dragStyles}
+      >
+        <CardHeader
+          cardState={cardState}
+          setCardState={setCardState}
+          onClose={onClose}
+          dragRef={dragRef}
+          dragHandlers={dragHandlers}
         />
 
-        <RouteSummary routeData={routeData} />
+        {/* Content */}
+        <div className="px-5 pb-3">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            Estimated Arrival
+          </h2>
+          <p className="text-lg text-gray-700">{routeData.timeRange}</p>
+        </div>
 
-        <FerryInfo routeData={routeData} />
+        {/* Show additional content only when not collapsed */}
+        {cardState !== "collapsed" && (
+          <div className="px-4 pt-2 pb-4">
+            <TransportModeSelector
+              selectedTransport={selectedTransport}
+              setSelectedTransport={setSelectedTransport}
+            />
 
-        {/* Expanded ferry information */}
-        {isExpanded && <ExpandedCard routeData={routeData} />}
+            <RouteSummary routeData={routeData} />
+
+            <FerryInfo routeData={routeData} />
+
+            {/* Expanded ferry information - only show when fully expanded */}
+            {cardState === "expanded" && <ExpandedCard routeData={routeData} />}
+          </div>
+        )}
       </div>
     </div>
   );
