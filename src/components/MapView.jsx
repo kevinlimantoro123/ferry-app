@@ -153,18 +153,15 @@ const MapView = ({
         userLocationMarker.setMap(null);
       }
 
-      console.log("Adding user location marker at:", userLocation);
-
       const userMarker = googleMapsService.addMarker(userLocation, {
         title: "Your Location",
         icon: {
-          path: "M 0,0 C -2,-20 -10,-22 -10,-30 A 10,10 0 1,1 10,-30 C 10,-22 2,-20 0,0 z",
-          fillColor: "#4285F4",
+          path: 0, // google.maps.SymbolPath.CIRCLE = 0
+          fillColor: "#FFFFFF",
           fillOpacity: 1,
-          strokeColor: "#FFFFFF",
-          strokeWeight: 2,
-          scale: 1,
-          anchor: { x: 0, y: 30 },
+          strokeColor: "#4285F4",
+          strokeWeight: 3,
+          scale: 8,
         },
       });
 
@@ -175,9 +172,13 @@ const MapView = ({
   };
 
   const centerOnUserLocation = () => {
+    console.log("centerOnUserLocation called, userLocation:", userLocation);
     if (userLocation) {
+      console.log("Centering map on:", userLocation);
       googleMapsService.panTo(userLocation);
       googleMapsService.setZoom(15);
+    } else {
+      console.log("No user location available");
     }
   };
 
@@ -186,13 +187,7 @@ const MapView = ({
     if (onCenterUserLocation) {
       onCenterUserLocation(centerOnUserLocation);
     }
-  }, [userLocation, onCenterUserLocation]);
-
-  // Add debug logging
-  useEffect(() => {
-    console.log("MapView userLocation changed:", userLocation);
-    console.log("MapView onCenterUserLocation:", onCenterUserLocation);
-  }, [userLocation, onCenterUserLocation]);
+  }, [onCenterUserLocation, userLocation]); // Include userLocation so function gets updated
 
   if (error) {
     return (

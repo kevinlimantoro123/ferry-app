@@ -40,7 +40,7 @@ const CardHeader = ({
           className="p-2 bg-white hover:bg-gray-300 rounded-full transition-colors"
           aria-label="Close"
         >
-          <X className="h-5 w-5 text-gray-600 font-semibold" />
+          <X className="h-6 w-6 text-black font-bold" />
         </button>
       </div>
     </div>

@@ -225,14 +225,25 @@ class GoogleMapsService {
   }
 
   panTo(location) {
+    console.log("googleMapsService.panTo called with:", location);
     if (this.map && location) {
       this.map.panTo(location);
+      console.log("Map panTo executed");
+    } else {
+      console.log("Map or location not available:", {
+        map: !!this.map,
+        location,
+      });
     }
   }
 
   setZoom(zoom) {
+    console.log("googleMapsService.setZoom called with:", zoom);
     if (this.map) {
       this.map.setZoom(zoom);
+      console.log("Map setZoom executed");
+    } else {
+      console.log("Map not available");
     }
   }
 }
