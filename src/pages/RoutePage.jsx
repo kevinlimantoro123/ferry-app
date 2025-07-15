@@ -71,7 +71,7 @@ const RoutePage = ({
 
     if (value.trim() === "") {
       clearResults();
-      setShowSearchDropdown(false);
+      // Keep dropdown open even when search is empty
     } else {
       searchPlaces(value);
       setShowSearchDropdown(true);
@@ -84,7 +84,6 @@ const RoutePage = ({
     clearResults();
 
     if (typeof location === "string") {
-      // Add ", Singapore" to make geocoding more accurate
       const searchTerm = location.toLowerCase().includes("singapore")
         ? location
         : `${location}, Singapore`;
@@ -127,7 +126,6 @@ const RoutePage = ({
     // Use actual ferry schedules from Marina South Pier
     const isWeekend = now.getDay() === 0 || now.getDay() === 6;
 
-    // Get Kusu Island schedule as base (other destinations have offset times)
     const kusuSchedule = isWeekend
       ? [
           "09:00",
@@ -255,8 +253,7 @@ const RoutePage = ({
 
           {/* Search dropdown */}
           {showSearchDropdown && (
-            <div className="absolute top-full left-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto z-30">
-              {/* Current location option - always show when dropdown is visible */}
+            <div className="absolute left-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto z-30 -mt-1">
               <div
                 className="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 transition-colors duration-150 ease-in-out"
                 onClick={handleUseCurrentLocation}
@@ -278,11 +275,8 @@ const RoutePage = ({
               </div>
 
               {/* Search results - only show if there are results or if searching */}
-              {(searchResults.length > 0 ||
-                searchLoading ||
-                searchValue.trim() !== "") && (
+              {searchValue.trim() !== "" && (
                 <>
-                  {/* Google Places search results */}
                   {searchResults.map((location, index) => (
                     <div
                       key={index}
