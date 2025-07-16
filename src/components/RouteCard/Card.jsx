@@ -76,6 +76,7 @@ const RouteCard = ({
       <NavigationButton
         onCenterUserLocation={onCenterUserLocation}
         cardState={cardState}
+        setCardState={setCardState}
       />
 
       <div
