@@ -7,6 +7,11 @@ const NavigationButton = ({
   setCardState,
   className = "",
 }) => {
+  // Show for all states when onCenterUserLocation is available
+  const shouldShow = onCenterUserLocation;
+
+  if (!shouldShow) return null;
+
   return (
     <button
       onClick={() => {
@@ -30,7 +35,7 @@ const NavigationButton = ({
           });
         }
       }}
-      className={`absolute -top-16 right-4 z-10 p-3 bg-white hover:bg-gray-50 rounded-full shadow-lg transition-colors ${className}`}
+      className={`p-3 bg-white hover:bg-gray-50 rounded-full shadow-lg transition-colors ${className}`}
       aria-label="Center on your location and collapse card"
     >
       <Navigation className="h-6 w-6 text-black" />

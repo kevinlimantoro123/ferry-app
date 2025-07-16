@@ -13,9 +13,11 @@
     "@anthropic-ai/claude-code": "^1.0.51",
     "@googlemaps/js-api-loader": "^1.16.10",
     "@tailwindcss/vite": "^4.1.11",
+    "framer-motion": "^12.23.6",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-modal-sheet": "^4.4.0",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {

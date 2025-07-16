@@ -1,5 +1,11 @@
 // components/MapView.js
-import { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import googleMapsService from "../services/googleMaps";
 
 const MapView = ({
@@ -17,6 +23,25 @@ const MapView = ({
   const [error, setError] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [userLocationMarker, setUserLocationMarker] = useState(null);
+  const [lastOrigin, setLastOrigin] = useState(null);
+  const [lastDestination, setLastDestination] = useState(null);
+
+  // Memoize location comparison to prevent unnecessary re-renders
+  const locationChanged = useMemo(() => {
+    const originChanged =
+      !lastOrigin ||
+      !origin ||
+      lastOrigin.lat !== origin.lat ||
+      lastOrigin.lng !== origin.lng;
+
+    const destinationChanged =
+      !lastDestination ||
+      !destination ||
+      lastDestination.lat !== destination.lat ||
+      lastDestination.lng !== destination.lng;
+
+    return originChanged || destinationChanged;
+  }, [origin, destination, lastOrigin, lastDestination]);
 
   useEffect(() => {
     initializeMap();
@@ -28,7 +53,7 @@ const MapView = ({
     } else if (!showRoute) {
       googleMapsService.clearRoute();
     }
-  }, [origin, destination, travelMode, showRoute]);
+  }, [origin, destination, travelMode, showRoute, locationChanged]);
 
   useEffect(() => {
     if (userLocation) {
@@ -88,9 +113,20 @@ const MapView = ({
     try {
       setIsLoading(true);
 
-      // Clear existing route and markers
+      // Clear existing route
       googleMapsService.clearRoute();
-      clearCustomMarkers();
+
+      // Only clear and recreate markers if the location actually changed
+      if (locationChanged) {
+        console.log("Location changed, clearing and recreating markers");
+        clearCustomMarkers();
+
+        // Update last known locations
+        setLastOrigin(origin);
+        setLastDestination(destination);
+      } else {
+        console.log("Only travel mode changed, keeping existing markers");
+      }
 
       const result = await googleMapsService.calculateRoute(
         origin,
@@ -101,23 +137,28 @@ const MapView = ({
       // Display the route
       googleMapsService.displayRoute(result.route);
 
-      // Add custom markers for origin
-      const originMarker = googleMapsService.addMarker(origin, {
-        title: "Starting Location",
-        icon: {
-          url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-        },
-      });
+      // Only add markers if they were cleared (location changed)
+      if (locationChanged && markers.length === 0) {
+        console.log("Adding new markers for new locations");
 
-      // Add destination marker specifically for Marina South Pier
-      const destinationMarker = googleMapsService.addMarker(destination, {
-        title: "Marina South Pier - Ferry Terminal",
-        icon: {
-          url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-        },
-      });
+        // Add custom markers for origin
+        const originMarker = googleMapsService.addMarker(origin, {
+          title: "Starting Location",
+          icon: {
+            url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+          },
+        });
 
-      setMarkers((prev) => [...prev, originMarker, destinationMarker]);
+        // Add destination marker specifically for Marina South Pier
+        const destinationMarker = googleMapsService.addMarker(destination, {
+          title: "Marina South Pier - Ferry Terminal",
+          icon: {
+            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+          },
+        });
+
+        setMarkers([originMarker, destinationMarker]);
+      }
 
       // Callback with route data
       if (onRouteCalculated) {
@@ -247,4 +288,18 @@ const MapView = ({
   );
 };
 
-export default MapView;
+// Memoize the component to prevent unnecessary re-renders
+export default React.memo(MapView, (prevProps, nextProps) => {
+  // Only re-render if these specific props change
+  return (
+    prevProps.origin?.lat === nextProps.origin?.lat &&
+    prevProps.origin?.lng === nextProps.origin?.lng &&
+    prevProps.destination?.lat === nextProps.destination?.lat &&
+    prevProps.destination?.lng === nextProps.destination?.lng &&
+    prevProps.travelMode === nextProps.travelMode &&
+    prevProps.showRoute === nextProps.showRoute &&
+    prevProps.userLocation?.lat === nextProps.userLocation?.lat &&
+    prevProps.userLocation?.lng === nextProps.userLocation?.lng &&
+    prevProps.className === nextProps.className
+  );
+});
