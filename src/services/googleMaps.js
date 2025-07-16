@@ -236,9 +236,12 @@ class GoogleMapsService {
     return results;
   }
 
-  displayRoute(route) {
+  displayRoute(route, cardState = "minimal") {
     if (this.directionsRenderer && route) {
       this.directionsRenderer.setDirections(route);
+
+      // Fit the route bounds considering the card state
+      this.fitRouteWithCard(route, cardState);
     }
   }
 
@@ -296,6 +299,117 @@ class GoogleMapsService {
     } else {
       console.log("Map not available");
     }
+  }
+
+  adjustMapForCard(cardState = "minimal") {
+    if (!this.map) {
+      console.log("Map not available for adjustment");
+      return;
+    }
+
+    // Don't adjust for expanded state
+    if (cardState === "expanded") {
+      console.log("No adjustment needed for expanded state");
+      return;
+    }
+
+    // Get current bounds
+    const bounds = this.map.getBounds();
+    if (!bounds) {
+      console.log("Map bounds not available");
+      return;
+    }
+
+    // Calculate padding based on card state
+    let bottomPadding = 0;
+    switch (cardState) {
+      case "minimal":
+        bottomPadding = 250; // Adjust based on your card height
+        break;
+      case "collapsed":
+        bottomPadding = 100; // Smaller padding for collapsed state
+        break;
+      default:
+        bottomPadding = 0;
+    }
+
+    // Apply padding to fit bounds with a slight delay to ensure proper rendering
+    setTimeout(() => {
+      this.map.fitBounds(bounds, {
+        bottom: bottomPadding,
+        top: 20,
+        left: 20,
+        right: 20,
+      });
+    }, 100);
+
+    console.log(
+      `Map adjusted for ${cardState} state with ${bottomPadding}px bottom padding`
+    );
+  }
+
+  fitRouteWithCard(route, cardState = "minimal") {
+    if (!route || !this.map) {
+      console.log("Route or map not available for fitting");
+      return;
+    }
+
+    // Don't adjust for expanded state
+    if (cardState === "expanded") {
+      console.log("No route adjustment needed for expanded state");
+      // Just fit normally without padding
+      const bounds = new this.google.maps.LatLngBounds();
+      const legs = route.routes[0].legs;
+      legs.forEach((leg) => {
+        bounds.extend(leg.start_location);
+        bounds.extend(leg.end_location);
+      });
+      this.map.fitBounds(bounds);
+      return;
+    }
+
+    // Calculate padding based on card state
+    let bottomPadding = 0;
+    switch (cardState) {
+      case "minimal":
+        bottomPadding = 250; // Account for minimal card height
+        break;
+      case "collapsed":
+        bottomPadding = 100; // Account for collapsed card height
+        break;
+      default:
+        bottomPadding = 50;
+    }
+
+    // Get route bounds
+    const bounds = new this.google.maps.LatLngBounds();
+
+    // Add route points to bounds
+    const legs = route.routes[0].legs;
+    legs.forEach((leg) => {
+      bounds.extend(leg.start_location);
+      bounds.extend(leg.end_location);
+
+      // Also include waypoints along the route for better fitting
+      leg.steps.forEach((step) => {
+        bounds.extend(step.start_location);
+        bounds.extend(step.end_location);
+      });
+    });
+
+    // Fit bounds with padding to account for the card
+    setTimeout(() => {
+      this.map.fitBounds(bounds, {
+        bottom: bottomPadding,
+        top: 50,
+        left: 50,
+        right: 50,
+      });
+    }, 100);
+
+    console.log(
+      `Route fitted with ${cardState} card state, bottom padding: ${bottomPadding}px`
+    );
   }
 }
 
