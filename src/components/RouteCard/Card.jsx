@@ -191,12 +191,12 @@ const RouteCard = ({
 
           <Sheet.Header>
             <div className="flex items-center px-3 py-2 relative">
-              {/* Draggable handle bar - centered */}
+              {/* Draggable handle bar */}
               <div className="absolute left-1/2 transform -translate-x-1/2 top-2">
                 <div className="w-12 h-1 bg-gray-400 rounded-full"></div>
               </div>
 
-              {/* Close button - positioned at the top right */}
+              {/* Close button */}
               <div className="absolute top-3 right-4">
                 <button
                   onClick={onClose}
@@ -207,7 +207,7 @@ const RouteCard = ({
                 </button>
               </div>
 
-              {/* Estimated Arrival - aligned with top */}
+              {/* Estimated Arrival */}
               <div className="flex-1 mt-4 pl-2 pt-1">
                 <h2 className="text-2xl font-semibold text-black">
                   Estimated Arrival
