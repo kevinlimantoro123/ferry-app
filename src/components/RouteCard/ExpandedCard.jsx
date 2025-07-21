@@ -4,7 +4,6 @@ const ExpandedCard = ({ routeData }) => {
   // Skip the first ferry
   const remainingFerries = routeData.ferries.slice(1);
   if (remainingFerries.length === 0) return null;
-
   return (
     <div className="mb-4">
       <h4 className="px-1 text-xl font-semibold text-gray-900 mb-2">

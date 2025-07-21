@@ -9,7 +9,7 @@ export const generateFerryTimes = (routeDuration) => {
     .toString()
     .padStart(2, "0")}:${arrivalTime.getMinutes().toString().padStart(2, "0")}`;
 
-  // Use actual ferry schedules from Marina South Pier
+  // Use ferry schedules from Marina South Pier
   const isWeekend = now.getDay() === 0 || now.getDay() === 6;
 
   // Get Kusu Island schedule from ferry data
@@ -45,28 +45,58 @@ export const formatRouteData = (routeData, selectedTransport) => {
 
   const route = routeData[selectedTransport];
   const ferryTimes = generateFerryTimes(route.durationValue);
+  const now = new Date();
+  const isWeekend = now.getDay() === 0 || now.getDay() === 6;
 
-  // Get all ferry schedules from ferry data
+  console.log("Current day:", now.getDay(), "Is weekend:", isWeekend);
+
+  // Get all ferry schedules from ferry data with correct weekday/weekend logic
   const ferries = FERRY_SCHEDULES.MSP.map((ferry, index) => {
-    const baseTime = ferryTimes[0] || "09:00"; // Use first ferry time as base
-    const [hours, minutes] = baseTime.split(":");
+    // Get the correct schedule based on current day
+    const schedule = isWeekend ? ferry.weekends : ferry.weekdays;
 
-    // Calculate offset for each destination (Kusu: 0, Lazarus: +15, St. John's: +30)
-    const offsetMinutes = index * 15;
+    console.log(
+      `${ferry.destination} schedule (${isWeekend ? "weekend" : "weekday"}):`,
+      schedule
+    );
 
-    const times = ferryTimes.map((time) => {
-      const [timeHours, timeMinutes] = time.split(":");
-      const newTime = new Date();
-      newTime.setHours(
-        parseInt(timeHours),
-        parseInt(timeMinutes) + offsetMinutes
-      );
-      return newTime.toTimeString().substring(0, 5);
-    });
+    // Get the arrival time string for filtering
+    const arrivalTime = new Date(
+      now.getTime() + (route.durationValue * 1000 || 0)
+    );
+    const arrivalTimeString = `${arrivalTime
+      .getHours()
+      .toString()
+      .padStart(2, "0")}:${arrivalTime
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+
+    // Find next ferry times after arrival for this specific destination
+    const availableFerriesAfterArrival = schedule.filter(
+      (time) => time >= arrivalTimeString
+    );
+
+    // Get next 3 ferry times, or first 3 if none available today
+    const nextFerryTimes =
+      availableFerriesAfterArrival.length >= 3
+        ? availableFerriesAfterArrival.slice(0, 3)
+        : [
+            ...availableFerriesAfterArrival,
+            ...schedule.slice(
+              0,
+              Math.max(0, 3 - availableFerriesAfterArrival.length)
+            ),
+          ];
+
+    console.log(`${ferry.destination} next ferry times:`, nextFerryTimes);
 
     return {
       destination: ferry.destination,
-      times: times,
+      times:
+        nextFerryTimes.length > 0
+          ? nextFerryTimes
+          : ["09:00", "10:00", "11:00"],
     };
   });
 
