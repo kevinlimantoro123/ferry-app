@@ -24,7 +24,7 @@ const FerryScheduleTable = ({ ferryTimings }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 font-semibold text-gray-700">
+      <div className="grid grid-cols-4 gap-4 p-4 bg-zinc-200 font-semibold text-gray-700">
         <div>Departure Time</div>
         <div>Destination</div>
         <div>Travel Time</div>
@@ -32,9 +32,7 @@ const FerryScheduleTable = ({ ferryTimings }) => {
       </div>
 
       {ferryTimings.map((timing, ferryIndex) => {
-        // Get all schedule times for this ferry destination
         const scheduleArray = timing.schedule || [];
-
         return scheduleArray.map((departureTime, timeIndex) => (
           <div
             key={`${ferryIndex}-${timeIndex}`}

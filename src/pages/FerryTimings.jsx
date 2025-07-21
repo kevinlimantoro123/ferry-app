@@ -32,7 +32,7 @@ const FerryTimingsPage = ({
       </div>
 
       {/* Ferry Schedule Table */}
-      <div className="p-6">
+      <div className="p-6 pb-15">
         <FerryScheduleTable ferryTimings={ferryTimings} />
       </div>
     </div>
