@@ -15,7 +15,7 @@ const FerryTimingsPage = ({
       {/* Ferry Location Tabs */}
       <div className="bg-white px-6 py-4 shadow-sm">
         <div className="flex space-x-4">
-          {["MSP", "Lazarus", "Kusu"].map((tab) => (
+          {["MSP", "St. John", "Kusu", "Sisters"].map((tab) => (
             <button
               key={tab}
               onClick={() => setSelectedFerryTab(tab)}

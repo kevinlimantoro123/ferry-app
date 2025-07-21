@@ -18,16 +18,26 @@ const ExpandedCard = ({ routeData }) => {
               </span>
             </div>
             <div className="flex space-x-4">
-              {ferry.times.map((time, index) => (
-                <span
-                  key={index}
-                  className={`text-md rounded ${
-                    index === 0 ? "text-black font-medium" : "text-gray-500"
-                  }`}
-                >
-                  {time}
-                </span>
-              ))}
+              {ferry.times.map((time, index) => {
+                const isNextDay = time.includes(" +1");
+                const displayTime = time.replace(" +1", "");
+
+                return (
+                  <span
+                    key={index}
+                    className={`text-md rounded ${
+                      index === 0 ? "text-black font-medium" : "text-gray-500"
+                    } ${isNextDay ? "relative" : ""}`}
+                  >
+                    {displayTime}
+                    {isNextDay && (
+                      <span className="ml-1 text-xs text-orange-500 font-medium">
+                        next day
+                      </span>
+                    )}
+                  </span>
+                );
+              })}
             </div>
           </div>
         ))}

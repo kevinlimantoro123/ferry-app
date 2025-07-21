@@ -16,11 +16,7 @@ const FerryScheduleTable = ({ ferryTimings }) => {
 
   const getCurrentSchedule = (timing) => {
     if (!timing) return [];
-
-    const now = new Date();
-    const isWeekend = now.getDay() === 0 || now.getDay() === 6;
-
-    return isWeekend ? timing.weekends || [] : timing.weekdays || [];
+    return timing.schedule || [];
   };
 
   const getNextDepartures = (schedule) => {

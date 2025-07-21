@@ -62,6 +62,12 @@ const RouteCard = ({
   const handleSnapPointChange = (snapIndex) => {
     console.log("Snap point changed to index:", snapIndex);
 
+    // Validate snapIndex is within bounds
+    if (snapIndex < 0 || snapIndex >= snapPoints.length) {
+      console.warn("Invalid snap index:", snapIndex, "defaulting to minimal");
+      snapIndex = 1; // Default to minimal state
+    }
+
     // Prevent unnecessary state updates if we're already at the correct state
     if (snapIndex === currentSnapIndex) {
       console.log(
@@ -72,16 +78,19 @@ const RouteCard = ({
       return;
     }
 
+    // Update current snap index immediately
+    setCurrentSnapIndex(snapIndex);
+
     // Use requestAnimationFrame to ensure the snap change is processed properly
     requestAnimationFrame(() => {
       if (snapIndex === 0) {
-        console.log("Setting card state to expanded");
+        console.log("Setting card state to expanded (0.8)");
         setCardState("expanded");
       } else if (snapIndex === 1) {
-        console.log("Setting card state to minimal");
+        console.log("Setting card state to minimal (0.3)");
         setCardState("minimal");
       } else if (snapIndex === 2) {
-        console.log("Setting card state to collapsed");
+        console.log("Setting card state to collapsed (0.08)");
         setCardState("collapsed");
       }
     });
