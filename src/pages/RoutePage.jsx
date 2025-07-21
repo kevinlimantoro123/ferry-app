@@ -121,6 +121,7 @@ const RoutePage = ({
           destination={{ lat: 1.2711, lng: 103.8633 }} // Marina South Pier coordinates
           travelMode={selectedTransport.toUpperCase()}
           showRoute={!!selectedLocationData}
+          showVessels={true} // Enable vessel tracking
           userLocation={currentLocation}
           onCenterUserLocation={(fn) => {
             centerUserLocationRef.current = fn;

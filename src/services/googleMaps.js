@@ -13,6 +13,7 @@ class GoogleMapsService {
     this.directionsService = null;
     this.directionsRenderer = null;
     this.placesService = null;
+    this.vesselMarkers = new Map(); // Store vessel markers
   }
 
   async initialize() {
@@ -410,6 +411,184 @@ class GoogleMapsService {
     console.log(
       `Route fitted with ${cardState} card state, bottom padding: ${bottomPadding}px`
     );
+  }
+
+  // Vessel marker management methods
+  addVesselMarker(vessel) {
+    if (!this.map || !this.google) {
+      console.error('Map not initialized');
+      return null;
+    }
+
+    // Remove existing marker for this vessel if it exists
+    if (this.vesselMarkers.has(vessel.vesselId)) {
+      this.vesselMarkers.get(vessel.vesselId).setMap(null);
+    }
+
+    const marker = new this.google.maps.Marker({
+      position: { lat: vessel.latitude, lng: vessel.longitude },
+      map: this.map,
+      title: vessel.name,
+      icon: this.createShipIcon(vessel),
+      zIndex: 1000
+    });
+
+    // Add click listener for vessel info
+    const infoWindow = new this.google.maps.InfoWindow({
+      content: this.createVesselInfoContent(vessel)
+    });
+
+    marker.addListener('click', () => {
+      infoWindow.open(this.map, marker);
+    });
+
+    this.vesselMarkers.set(vessel.vesselId, marker);
+    return marker;
+  }
+
+  updateVesselMarker(vessel) {
+    const marker = this.vesselMarkers.get(vessel.vesselId);
+    if (marker) {
+      marker.setPosition({ lat: vessel.latitude, lng: vessel.longitude });
+      const icon = marker.getIcon();
+      if (icon && typeof icon === 'object') {
+        marker.setIcon({
+          ...icon,
+          rotation: vessel.heading || 0
+        });
+      }
+    } else {
+      // Create new marker if it doesn't exist
+      this.addVesselMarker(vessel);
+    }
+  }
+
+  removeVesselMarker(vesselId) {
+    const marker = this.vesselMarkers.get(vesselId);
+    if (marker) {
+      marker.setMap(null);
+      this.vesselMarkers.delete(vesselId);
+    }
+  }
+
+  clearAllVesselMarkers() {
+    this.vesselMarkers.forEach((marker) => {
+      marker.setMap(null);
+    });
+    this.vesselMarkers.clear();
+  }
+
+  getVesselColor(vesselCategory) {
+    const colorMap = {
+      'Ferry': '#4CAF50',     // Green for ferries
+      'Cargo': '#FF9800',     // Orange for cargo
+      'Tanker': '#F44336',    // Red for tankers
+      'Tug': '#9C27B0',       // Purple for tugs
+      'Pilot': '#FBBC04',     // Yellow
+      'Recreational': '#FF6D01', // Orange
+      'Fishing': '#00BCD4',   // Cyan
+      'Unknown': '#2196F3'    // Blue
+    };
+    return colorMap[vesselCategory] || colorMap['Unknown'];
+  }
+
+  createShipIcon(vessel) {
+    // Determine ship color based on type
+    const color = this.getVesselColor(vessel.vesselCategory);
+
+    // Create SVG ship icon pointing in the direction of heading
+    const heading = vessel.heading || 0;
+    const size = vessel.vesselCategory.toLowerCase() === 'ferry' ? 75 : 65; // Increased from 60/50 to 75/65
+    
+    return {
+      url: this.createShipSvgDataUrl(color, heading, vessel.name || 'Unknown'),
+      scaledSize: new this.google.maps.Size(size, Math.round(size * 0.67)), // 75x50 or 65x44 aspect ratio
+      anchor: new this.google.maps.Point(size/2, Math.round(size * 0.67)/2),
+    };
+  }
+
+  createShipSvgDataUrl(color, heading, vesselName) {
+    // Create a simpler, more reliable ship icon with name label
+    const svg = `
+      <svg width="75" height="50" viewBox="0 0 75 50" xmlns="http://www.w3.org/2000/svg">
+        <!-- Ship name label background -->
+        <rect x="2" y="2" width="71" height="15" fill="rgba(255,255,255,0.95)" stroke="${color}" stroke-width="1" rx="3"/>
+        <!-- Ship name text -->
+        <text x="37.5" y="12" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#333">${vesselName.length > 16 ? vesselName.substring(0, 16) + '...' : vesselName}</text>
+        
+        <!-- Ship body (simplified design) -->
+        <g transform="rotate(${heading} 37.5 32)">
+          <!-- Main hull -->
+          <path d="M25 34 L50 34 L47 39 L28 39 Z" fill="${color}" stroke="#fff" stroke-width="1"/>
+          <!-- Ship deck -->
+          <rect x="28" y="29" width="19" height="5" fill="${color}" stroke="#fff" stroke-width="1"/>
+          <!-- Bridge/superstructure -->
+          <rect x="33" y="24" width="10" height="5" fill="${color}" stroke="#fff" stroke-width="1"/>
+          <!-- Wheelhouse -->
+          <rect x="35" y="21" width="5" height="3" fill="#fff" stroke="${color}" stroke-width="1"/>
+          <!-- Bow (front) -->
+          <path d="M37.5 18 L40 24 L35 24 Z" fill="${color}" stroke="#fff" stroke-width="1"/>
+          <!-- Direction indicator -->
+          <circle cx="37.5" cy="19" r="2" fill="#fff"/>
+          <!-- Side details -->
+          <line x1="28" y1="31" x2="47" y2="31" stroke="#fff" stroke-width="0.5"/>
+          <line x1="30" y1="36" x2="45" y2="36" stroke="#fff" stroke-width="0.5"/>
+        </g>
+      </svg>
+    `;
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  }
+
+  createVesselInfoContent(vessel) {
+    // Format date as DD/MM/YYYY HH:mm:ss
+    let lastUpdate = 'Unknown';
+    
+    try {
+      if (vessel.timestamp) {
+        const date = new Date(vessel.timestamp);
+        if (!isNaN(date.getTime())) {
+          const day = date.getDate().toString().padStart(2, '0');
+          const month = (date.getMonth() + 1).toString().padStart(2, '0');
+          const year = date.getFullYear();
+          const hours = date.getHours().toString().padStart(2, '0');
+          const minutes = date.getMinutes().toString().padStart(2, '0');
+          const seconds = date.getSeconds().toString().padStart(2, '0');
+          
+          lastUpdate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        }
+      }
+    } catch (error) {
+      console.warn('Error formatting date:', error);
+      lastUpdate = 'Data unavailable';
+    }
+
+    return `
+      <div style="max-width: 300px; font-family: Arial, sans-serif;">
+        <h3 style="margin: 0 0 10px 0; color: #333;">${vessel.name}</h3>
+        <div style="margin: 5px 0;"><strong>Type:</strong> ${vessel.vesselCategory || vessel.shipType}</div>
+        <div style="margin: 5px 0;"><strong>MMSI:</strong> ${vessel.vesselId}</div>
+        <div style="margin: 5px 0;"><strong>Speed:</strong> ${vessel.sog || vessel.speed || 0} knots</div>
+        <div style="margin: 5px 0;"><strong>Heading:</strong> ${vessel.heading || 0}°</div>
+        <div style="margin: 5px 0;"><strong>Destination:</strong> ${vessel.destination || 'Unknown'}</div>
+        <div style="margin: 5px 0;"><strong>Status:</strong> ${vessel.status || 'Unknown'}</div>
+        ${vessel.length ? `<div style="margin: 5px 0;"><strong>Length:</strong> ${vessel.length}m</div>` : ''}
+        <div style="margin: 5px 0; font-size: 12px; color: #666;">
+          <strong>Last Update:</strong> ${lastUpdate}
+        </div>
+      </div>
+    `;
+  }
+
+  displayVessels(vessels) {
+    // Clear existing vessel markers
+    this.clearAllVesselMarkers();
+    
+    // Add new markers for all vessels
+    vessels.forEach(vessel => {
+      this.addVesselMarker(vessel);
+    });
+
+    console.log(`Displayed ${vessels.length} vessels on map`);
   }
 }
 
