@@ -14,30 +14,6 @@ const FerryScheduleTable = ({ ferryTimings }) => {
     }
   };
 
-  const getCurrentSchedule = (timing) => {
-    if (!timing) return [];
-    return timing.schedule || [];
-  };
-
-  const getNextDepartures = (schedule) => {
-    const now = new Date();
-    const currentTime = `${now.getHours().toString().padStart(2, "0")}:${now
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
-
-    // Get next 3 departures
-    const upcoming = schedule.filter((time) => time > currentTime).slice(0, 3);
-
-    // If less than 3, add from beginning of schedule (next day)
-    if (upcoming.length < 3) {
-      const needed = 3 - upcoming.length;
-      upcoming.push(...schedule.slice(0, needed));
-    }
-
-    return upcoming;
-  };
-
   if (!ferryTimings || ferryTimings.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm overflow-hidden p-8 text-center">
@@ -49,17 +25,17 @@ const FerryScheduleTable = ({ ferryTimings }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 font-semibold text-gray-700">
-        <div>Next Departure</div>
+        <div>Departure Time</div>
         <div>Destination</div>
         <div>Travel Time</div>
         <div>Status</div>
       </div>
 
       {ferryTimings.map((timing, ferryIndex) => {
-        const schedule = getCurrentSchedule(timing);
-        const nextDepartures = getNextDepartures(schedule);
+        // Get all schedule times for this ferry destination
+        const scheduleArray = timing.schedule || [];
 
-        return nextDepartures.map((departureTime, timeIndex) => (
+        return scheduleArray.map((departureTime, timeIndex) => (
           <div
             key={`${ferryIndex}-${timeIndex}`}
             className="grid grid-cols-4 gap-4 p-4 border-t border-gray-100"
