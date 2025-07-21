@@ -30,7 +30,7 @@ const StartingPage = ({ onSearchClick }) => {
           >
             Search
           </button>
-          <Search className="absolute left-3 top-4 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-4.5 h-5 w-5 text-gray-400" />
         </div>
       </div>
     </div>
