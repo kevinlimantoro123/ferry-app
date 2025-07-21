@@ -38,7 +38,7 @@ const RouteCard = ({
   // Initialize with snap index 1 (0.3/30% - minimal state) as default
   const [currentSnapIndex, setCurrentSnapIndex] = useState(1);
 
-  // Define snap points: expanded (80%), minimal (30%), collapsed (8%) - in descending order
+  // Define snap points: expanded (80%), minimal (30%), collapsed (8%)
   const snapPoints = [0.8, 0.3, 0.08];
 
   // Update snap index when cardState changes (after first render)
@@ -186,6 +186,7 @@ const RouteCard = ({
         snapPoints={snapPoints}
         initialSnap={getInitialSnap()}
         onSnap={handleSnapPointChange}
+        disableScrollLocking={false}
       >
         <Sheet.Container
           style={{ backgroundColor: "#F7F7F6", position: "relative" }}
@@ -227,15 +228,19 @@ const RouteCard = ({
           </Sheet.Header>
 
           <Sheet.Content>
-            <div className="px-4 pt-2 pb-4">
+            <div className="px-4 pt-2">
               <TransportModeSelector
                 selectedTransport={selectedTransport}
                 setSelectedTransport={setSelectedTransport}
               />
               <RouteSummary routeData={routeData} />
-              <FerryInfo routeData={routeData} />
-              <ExpandedCard routeData={routeData} />
             </div>
+            <Sheet.Scroller>
+              <div className="px-4 pb-6">
+                <FerryInfo routeData={routeData} />
+                <ExpandedCard routeData={routeData} />
+              </div>
+            </Sheet.Scroller>
           </Sheet.Content>
         </Sheet.Container>
       </Sheet>
