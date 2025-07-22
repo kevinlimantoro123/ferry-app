@@ -8,7 +8,7 @@ export const useRoute = (origin) => {
 
   const calculateRoute = useCallback(
     async (travelMode = "DRIVING") => {
-      console.log("🚗 Route calculation - Origin received:", origin);
+      console.log("Route calculation - Origin received:", origin);
 
       if (!origin) {
         setError("Origin location is required");
@@ -29,7 +29,7 @@ export const useRoute = (origin) => {
             travelMode
           );
 
-          console.log("📊 Route result:", {
+          console.log("Route result:", {
             distance: result.distance,
             duration: result.duration,
             from: origin,
