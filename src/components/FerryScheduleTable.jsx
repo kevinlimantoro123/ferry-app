@@ -32,7 +32,7 @@ const FerryScheduleTable = ({ ferryTimings }) => {
       </div>
 
       {ferryTimings.map((timing, ferryIndex) => {
-        const scheduleArray = timing.schedule || [];
+        const scheduleArray = timing.directSchedule || [];
         return scheduleArray.map((departureTime, timeIndex) => (
           <div
             key={`${ferryIndex}-${timeIndex}`}

@@ -103,31 +103,31 @@ export const FERRY_SCHEDULES = {
   "St. John": [
     {
       destination: "Kusu Island",
-      schedule: ["09:30", "11:30", "13:30", "14:30", "15:15"],
+      directSchedule: ["09:30", "11:30", "13:30", "14:30", "15:15"],
       travelTime: "15 minutes",
     },
     {
       destination: "MSP",
-      schedule: ["14:00", "18:00"],
+      directSchedule: ["14:00", "18:00"],
       travelTime: "15 minutes",
     },
   ],
   Kusu: [
     {
       destination: "MSP",
-      schedule: ["10:00", "12:00", "14:00"],
+      directSchedule: ["10:00", "12:00", "14:00"],
       travelTime: "15 minutes",
     },
     {
       destination: "St. John Island",
-      schedule: ["13:45", "15:30", "16:10", "17:30"],
+      directSchedule: ["13:45", "15:30", "16:10", "17:30"],
       travelTime: "15 minutes",
     },
   ],
   Sisters: [
     {
       destination: "Kusu Island",
-      schedule: ["11:30", "13:30", "14:45"],
+      directSchedule: ["11:30", "13:30", "14:45"],
       travelTime: "15 minutes",
     },
   ],
