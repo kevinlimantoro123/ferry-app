@@ -44,22 +44,59 @@ export const FERRY_SCHEDULES = {
   MSP: [
     {
       destination: "Kusu Island",
-      schedule: ["15:00", "17:00"],
+      directSchedule: ["15:00", "17:00"],
+      indirectSchedule: [
+        // Via St. John Island
+        { departure: "09:00", via: "St. John Island" },
+        { departure: "11:00", via: "St. John Island" },
+        { departure: "13:00", via: "St. John Island" },
+        { departure: "13:00", via: "St. John Island" },
+        { departure: "13:00", via: "St. John Island" },
+        // Via Sisters Island
+        { departure: "09:00", via: "Sisters Island" },
+        { departure: "11:00", via: "Sisters Island" },
+        { departure: "13:00", via: "Sisters Island" },
+      ],
       travelTime: "15 minutes",
     },
     {
       destination: "Lazarus Island",
-      schedule: ["10:00", "12:00", "14:00"],
+      directSchedule: ["10:00", "12:00", "14:00"],
+      indirectSchedule: [
+        // Via St. John Island (walking bridge)
+        {
+          departure: "09:00",
+          via: "St. John Island",
+          note: "via walking bridge",
+        },
+        {
+          departure: "11:00",
+          via: "St. John Island",
+          note: "via walking bridge",
+        },
+        {
+          departure: "13:00",
+          via: "St. John Island",
+          note: "via walking bridge",
+        },
+      ],
       travelTime: "20 minutes",
     },
     {
       destination: "St. John Island",
-      schedule: ["09:30", "11:00", "13:00"],
+      directSchedule: ["09:00", "11:00", "13:00"],
+      indirectSchedule: [
+        // Via Kusu Island
+        { departure: "15:00", via: "Kusu Island" },
+        { departure: "15:00", via: "Kusu Island" },
+        { departure: "17:00", via: "Kusu Island" },
+      ],
       travelTime: "25 minutes",
     },
     {
       destination: "Sisters Island",
-      schedule: ["09:30", "11:00", "13:00"],
+      directSchedule: ["09:00", "11:00", "13:00"],
+      indirectSchedule: [], // No indirect routes specified
       travelTime: "25 minutes",
     },
   ],
