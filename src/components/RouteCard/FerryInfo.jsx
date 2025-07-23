@@ -8,15 +8,13 @@ const FerryInfo = ({ routeData }) => {
       </h4>
       <div className="bg-white rounded-lg p-4">
         <div className="flex items-center justify-between mb-2">
-          <div className="flex flex-col">
+          <div className="flex items-center gap-2">
             <span className="text-lg font-medium text-black">
               {routeData.ferry.destination}
             </span>
-            <div className="flex flex-wrap gap-1 mt-1">
-              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                Direct
-              </span>
-            </div>
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+              Direct
+            </span>
           </div>
         </div>
         <div className="flex space-x-4">
