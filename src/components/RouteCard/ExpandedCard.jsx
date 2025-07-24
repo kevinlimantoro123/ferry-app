@@ -101,13 +101,13 @@ const ExpandedCard = ({ routeData }) => {
                     {ferry.indirectTimes.map((route, routeIndex) => (
                       <div
                         key={routeIndex}
-                        className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                        className="flex items-center justify-between p-2 bg-stone-50 rounded"
                       >
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium text-gray-900">
+                          <span className="text-md font-medium text-black">
                             {route.departure}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs font-medium text-gray-700">
                             via {route.via}
                             {route.note && ` (${route.note})`}
                           </span>

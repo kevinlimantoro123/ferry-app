@@ -64,17 +64,17 @@ export const FERRY_SCHEDULES = {
         {
           departure: "09:00",
           via: "St. John Island",
-          note: "via walking bridge",
+          note: "walking bridge",
         },
         {
           departure: "11:00",
           via: "St. John Island",
-          note: "via walking bridge",
+          note: "walking bridge",
         },
         {
           departure: "13:00",
           via: "St. John Island",
-          note: "via walking bridge",
+          note: "walking bridge",
         },
       ],
       travelTime: "20 minutes",
