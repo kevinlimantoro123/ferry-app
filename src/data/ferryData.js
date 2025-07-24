@@ -46,15 +46,12 @@ export const FERRY_SCHEDULES = {
       destination: "Kusu Island",
       directSchedule: ["15:00", "17:00"],
       indirectSchedule: [
-        // Via St. John Island
+        // Via St. John Island / Sisters Island
         { departure: "09:00", via: "St. John Island" },
-        { departure: "11:00", via: "St. John Island" },
-        { departure: "13:00", via: "St. John Island" },
-        { departure: "13:00", via: "St. John Island" },
-        { departure: "13:00", via: "St. John Island" },
-        // Via Sisters Island
         { departure: "09:00", via: "Sisters Island" },
+        { departure: "11:00", via: "St. John Island" },
         { departure: "11:00", via: "Sisters Island" },
+        { departure: "13:00", via: "St. John Island" },
         { departure: "13:00", via: "Sisters Island" },
       ],
       travelTime: "15 minutes",
@@ -87,7 +84,6 @@ export const FERRY_SCHEDULES = {
       directSchedule: ["09:00", "11:00", "13:00"],
       indirectSchedule: [
         // Via Kusu Island
-        { departure: "15:00", via: "Kusu Island" },
         { departure: "15:00", via: "Kusu Island" },
         { departure: "17:00", via: "Kusu Island" },
       ],
