@@ -7,14 +7,14 @@ import React, {
   useMemo,
 } from "react";
 import googleMapsService from "../services/googleMaps";
-import { 
+import {
   getTodaysVesselData,
   getAllAvailableVesselData,
-  loadVesselMovementData, 
+  loadVesselMovementData,
   VESSEL_DATA_PATH,
   getVesselsByRoute,
   startAutoRefresh,
-  stopAutoRefresh
+  stopAutoRefresh,
 } from "../data/ferryData";
 
 const MapView = ({
@@ -59,26 +59,26 @@ const MapView = ({
     try {
       setIsLoadingVessels(true);
       console.log("Loading vessel movement data...");
-      
+
       // Load vessel data using dummy data (forceDummy = true)
       await loadVesselMovementData(VESSEL_DATA_PATH, true);
-      
+
       // Try to get today's vessel positions first
       let currentVessels = getTodaysVesselData();
-      
+
       // If no today's data, try all available data
       if (currentVessels.length === 0) {
         console.log("No today's data found, trying all available data...");
         currentVessels = getAllAvailableVesselData();
       }
-      
+
       // If still no data, something is wrong
       if (currentVessels.length === 0) {
         console.error("No vessel data available at all!");
         setIsLoadingVessels(false);
         return;
       }
-      
+
       // Filter by route if specified
       if (selectedRoute) {
         const filteredByRoute = getVesselsByRoute(selectedRoute);
@@ -86,40 +86,46 @@ const MapView = ({
           currentVessels = filteredByRoute;
         }
       }
-      
+
       // Filter to only ferry vessels for better relevance if no route selected
       if (!selectedRoute) {
-        const ferryVessels = currentVessels.filter(vessel => 
-          vessel.vesselCategory === 'Ferry' || 
-          vessel.shipType.toLowerCase().includes('ferry') ||
-          vessel.shipType.toLowerCase().includes('passenger')
+        const ferryVessels = currentVessels.filter(
+          (vessel) =>
+            vessel.vesselCategory === "Ferry" ||
+            vessel.shipType.toLowerCase().includes("ferry") ||
+            vessel.shipType.toLowerCase().includes("passenger")
         );
-        
+
         // Use ferry vessels if found, otherwise use all vessels
         if (ferryVessels.length > 0) {
           currentVessels = ferryVessels;
           console.log(`Found ${ferryVessels.length} ferry vessels`);
         } else {
-          console.log(`No ferry vessels found, showing all ${currentVessels.length} vessels`);
+          console.log(
+            `No ferry vessels found, showing all ${currentVessels.length} vessels`
+          );
         }
       }
-      
+
       console.log(`Displaying ${currentVessels.length} vessels on map`);
-      console.log('Vessels to display:', currentVessels.map(v => ({
-        name: v.name, 
-        type: v.vesselCategory, 
-        lat: v.latitude, 
-        lng: v.longitude
-      })));
-      
+      console.log(
+        "Vessels to display:",
+        currentVessels.map((v) => ({
+          name: v.name,
+          type: v.vesselCategory,
+          lat: v.latitude,
+          lng: v.longitude,
+        }))
+      );
+
       // Display vessels on map using the new service method
       if (googleMapsService.map) {
         googleMapsService.displayVessels(currentVessels);
-        console.log('Vessels displayed on map');
+        console.log("Vessels displayed on map");
       } else {
-        console.error('Google Maps not initialized!');
+        console.error("Google Maps not initialized!");
       }
-      
+
       setIsLoadingVessels(false);
     } catch (error) {
       console.error("Error loading vessel data:", error);
@@ -130,7 +136,7 @@ const MapView = ({
 
   // Auto-refresh vessel data every 15 seconds
   const startVesselAutoRefresh = useCallback(() => {
-    console.log('Starting vessel auto-refresh (15 seconds)');
+    console.log("Starting vessel auto-refresh (15 seconds)");
     startAutoRefresh((vessels) => {
       console.log(`Auto-refresh: Received ${vessels.length} vessels`);
       if (googleMapsService.map) {
@@ -140,7 +146,7 @@ const MapView = ({
   }, []);
 
   const stopVesselAutoRefresh = useCallback(() => {
-    console.log('Stopping vessel auto-refresh');
+    console.log("Stopping vessel auto-refresh");
     stopAutoRefresh();
   }, []);
 
@@ -189,13 +195,15 @@ const MapView = ({
   }, []);
 
   const clearCustomMarkers = useCallback(() => {
-    markers.forEach((marker) => {
-      if (marker.setMap) {
-        marker.setMap(null);
-      }
+    setMarkers((currentMarkers) => {
+      currentMarkers.forEach((marker) => {
+        if (marker && marker.setMap) {
+          marker.setMap(null);
+        }
+      });
+      return [];
     });
-    setMarkers([]);
-  }, [markers]);
+  }, []);
 
   const calculateAndDisplayRoute = useCallback(async () => {
     if (!origin || !destination) return;
@@ -210,12 +218,6 @@ const MapView = ({
       if (locationChanged) {
         console.log("Location changed, clearing and recreating markers");
         clearCustomMarkers();
-
-        // Update last known locations
-        setLastOrigin(origin);
-        setLastDestination(destination);
-      } else {
-        console.log("Only travel mode changed, keeping existing markers");
       }
 
       const result = await googleMapsService.calculateRoute(
@@ -227,9 +229,12 @@ const MapView = ({
       // Display the route
       googleMapsService.displayRoute(result.route);
 
-      // Only add markers if they were cleared (location changed)
-      if (locationChanged && markers.length === 0) {
-        console.log("Adding new markers for new locations");
+      // Clear and recreate markers when location changes
+      if (locationChanged) {
+        console.log("Location changed, clearing and recreating markers");
+
+        // Clear existing markers first
+        clearCustomMarkers();
 
         // Add custom markers for origin
         const originMarker = googleMapsService.addMarker(origin, {
@@ -248,6 +253,10 @@ const MapView = ({
         });
 
         setMarkers([originMarker, destinationMarker]);
+
+        // Update last known locations
+        setLastOrigin(origin);
+        setLastDestination(destination);
       }
 
       // Callback with route data
@@ -261,7 +270,14 @@ const MapView = ({
       setError("Failed to calculate route. Please try again.");
       setIsLoading(false);
     }
-  }, [origin, destination, travelMode, locationChanged, markers.length, onRouteCalculated, clearCustomMarkers]);
+  }, [
+    origin,
+    destination,
+    travelMode,
+    locationChanged,
+    onRouteCalculated,
+    clearCustomMarkers,
+  ]);
 
   const addUserLocationMarker = useCallback(async () => {
     console.log(
@@ -284,7 +300,7 @@ const MapView = ({
 
     try {
       // Clear existing user location marker first using setter function
-      setUserLocationMarker(prevMarker => {
+      setUserLocationMarker((prevMarker) => {
         if (prevMarker) {
           prevMarker.setMap(null);
           console.log("Cleared existing user location marker");
@@ -335,7 +351,14 @@ const MapView = ({
     } else if (!showRoute) {
       googleMapsService.clearRoute();
     }
-  }, [origin, destination, travelMode, showRoute, locationChanged, calculateAndDisplayRoute]);
+  }, [
+    origin,
+    destination,
+    travelMode,
+    showRoute,
+    locationChanged,
+    calculateAndDisplayRoute,
+  ]);
 
   useEffect(() => {
     if (userLocation) {
@@ -352,7 +375,14 @@ const MapView = ({
       clearVesselMarkers();
       stopVesselAutoRefresh();
     }
-  }, [showVessels, isLoading, selectedRoute, loadAndDisplayVessels, startVesselAutoRefresh, stopVesselAutoRefresh]);
+  }, [
+    showVessels,
+    isLoading,
+    selectedRoute,
+    loadAndDisplayVessels,
+    startVesselAutoRefresh,
+    stopVesselAutoRefresh,
+  ]);
 
   // Also try to add user location marker after map is initialized
   useEffect(() => {
